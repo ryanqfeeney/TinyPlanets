@@ -16,6 +16,7 @@ public class Sun extends Cbody{
         loc = new Vector2(0f,0f);
 
         sprite.setSize((float)radius,(float)radius);
+        sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
     }
 
     @Override

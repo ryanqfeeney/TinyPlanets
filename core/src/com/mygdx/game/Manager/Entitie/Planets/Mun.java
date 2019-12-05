@@ -13,7 +13,7 @@ public class Mun extends Cbody{
         sprite = textureAtlas.createSprite(name);
         parentBody = pBody;
         parentBody.addChild(this);
-        radius=400_000;
+        radius=800_000;
         mass=9.76*Math.pow(10,20);
         semiA = 9_000_000.0;
         semiB = 9_000_000.0;
@@ -21,5 +21,7 @@ public class Mun extends Cbody{
         Random rand = new Random();
         loc = new Vector2((float)(semiA) + parentBody.getX(), 0);
         sprite.setSize((float)radius,(float)radius);
+        sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
+
     }
 }

@@ -5,23 +5,22 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.Random;
 
-public class Kerbin extends Cbody{
-    public Kerbin(Cbody pBody){
+public class Minmus extends Cbody{
+    public Minmus(Cbody pBody){
         super();
         textureAtlas = new TextureAtlas("sprites.txt");
-        name = "kerbin";
+        name = "mun";
         sprite = textureAtlas.createSprite(name);
         parentBody = pBody;
         parentBody.addChild(this);
-        radius=1200000;
-        mass=5.3*Math.pow(10,22);
-        semiA = 13_600_000_000.0;
-        semiB = 13_600_000_000.0;
+        radius=600_000;
+        mass=2.65*Math.pow(10,19);
+        semiA = 47_000_000.0;
+        semiB = 47_000_000.0;
 
+        Random rand = new Random();
         loc = new Vector2((float)(semiA) + parentBody.getX(), 0);
         sprite.setSize((float)radius,(float)radius);
         sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
     }
-
-
 }

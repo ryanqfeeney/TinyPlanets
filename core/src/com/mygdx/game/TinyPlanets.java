@@ -2,7 +2,6 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.mygdx.game.Manager.GameStateManager;
 
 public class TinyPlanets extends ApplicationAdapter {
@@ -29,7 +28,6 @@ public class TinyPlanets extends ApplicationAdapter {
 	public void render () {
 
 		float dt = Gdx.graphics.getDeltaTime();
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		gsm.handleInput();
 		gsm.render(dt);
 
