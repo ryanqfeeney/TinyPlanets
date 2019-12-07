@@ -30,4 +30,8 @@ public class GameState {
     public void handleInput(){
 
     }
+
+    public OrthographicCamera getCamera(){
+        return camera;
+    }
 }

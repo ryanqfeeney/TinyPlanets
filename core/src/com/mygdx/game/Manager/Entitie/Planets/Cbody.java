@@ -12,15 +12,13 @@ import java.util.ArrayList;
 
 public class Cbody{
 
-
-
     String name;
     TextureAtlas textureAtlas;
     Sprite sprite;
     Cbody parentBody;
     Vector2 loc;
     double MULTIPLIER;
-    double gravConstanat;
+    static double gravConstanat = 6.67*Math.pow(10,-11);
 
     ArrayList<Cbody> children;
 
@@ -30,20 +28,19 @@ public class Cbody{
     protected double mass;
     protected double rotateRate;
 
-
-
-
+    protected double test;
     protected double semiA;
     protected double semiB;
+    protected double orbRotation;
+    protected double focus;
 
     public Cbody(){
         loc = new Vector2(1f,1f);
         children = new  ArrayList<Cbody>();
-
-        gravConstanat = 6.67*Math.pow(10,-11);
         MULTIPLIER = 1;
-
-        rotateRate = 1;
+        rotateRate = .0166;
+        test = 0;
+        orbRotation = 0;
     }
 
 
@@ -59,26 +56,24 @@ public class Cbody{
 
     public void moveOnOrbit(double t){
         this.t += t;
-        double focus = findFocus(semiA, semiB);
 
         double h = Math.pow((semiA - semiB),2)/Math.pow((semiA + semiB),2);
-
         double p = Math.PI * (semiA+semiB) *( 1 + (3*h)/(10 + Math.sqrt(4-3*h)));
 
         p = p / (2 * Math.PI);
-
         double q = this.t/(2*Math.PI*semiA);
 
-        float x = (float)(parentBody.getX() + focus + semiA*Math.cos(this.t/p));
-        float y = (float)(parentBody.getY() + semiB*Math.sin(this.t/p));
+        float x = (float)(parentBody.getX() + semiA*Math.cos(this.t/p)*Math.cos(orbRotation) -
+                        semiB*Math.sin(this.t/p)*Math.sin(orbRotation) + focus*Math.cos(orbRotation));
+
+        float y = (float)(parentBody.getY() + semiA*Math.cos(this.t/p)*Math.sin(orbRotation) +
+                        semiB*Math.sin(this.t/p)*Math.cos(orbRotation) + focus*Math.sin(orbRotation));
 
         float dx = x - loc.x;
         float dy = y - loc.y;
 
         loc.set(x,y);
-        //loc.lerp(new Vector2(x,y),1*dt);
         for (Cbody child: children){
-            //child.loc.lerp(new Vector2(child.getX()+dx,child.getY()+dy), 1*dt);
             child.loc.set(child.getX()+dx,child.getY()+dy);
         }
     }
@@ -87,14 +82,27 @@ public class Cbody{
         return Math.sqrt(a*a - b*b);
     }
 
-    public double calculateVelocity(){
+
+    public double calculateVelocity() {
+
         double dist = loc.dst(parentBody.loc);
         if (Double.isNaN(dist)){
-            System.out.println("BREAK BECAUSE NAN ON CALC VELOCITY");
+            System.out.println("BREAK BECAUSE NAN ON CALC VELOCITY "+getName());
             System.exit(0);
         }
-        /////Should put catch for divide by 0 // catch for sqrt of -#
-        return MULTIPLIER*Math.sqrt(gravConstanat*parentBody.mass*((2/dist)-(1/semiA)));
+        double vel = MULTIPLIER*Math.sqrt(gravConstanat*parentBody.mass*((2/dist)-(1/semiA)));
+        if (Double.isNaN(vel)){
+            vel = MULTIPLIER*Math.sqrt(gravConstanat*parentBody.mass*(Math.abs((2/dist)-(2/dist))));
+            if(Double.isNaN(vel)) {
+                System.out.println("BREAK BECAUSE NAN ON CALC VELOCITY 2 "+getName());
+                System.exit(0);
+            }
+        }
+        if(vel==0){
+            vel = 1;
+        }
+        return vel;
+
     }
 
 

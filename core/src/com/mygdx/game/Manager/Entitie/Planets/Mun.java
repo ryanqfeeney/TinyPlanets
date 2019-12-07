@@ -17,9 +17,10 @@ public class Mun extends Cbody{
         mass=9.76*Math.pow(10,20);
         semiA = 9_000_000.0;
         semiB = 9_000_000.0;
-
-        Random rand = new Random();
-        loc = new Vector2((float)(semiA) + parentBody.getX(), 0);
+        orbRotation = 0;
+        focus = findFocus(semiA, semiB);
+        loc = new Vector2(0f,0f);
+        moveOnOrbit(0);
         sprite.setSize((float)radius,(float)radius);
         sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
 

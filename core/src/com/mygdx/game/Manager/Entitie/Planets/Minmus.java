@@ -3,7 +3,6 @@ package com.mygdx.game.Manager.Entitie.Planets;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.Random;
 
 public class Minmus extends Cbody{
     public Minmus(Cbody pBody){
@@ -16,11 +15,14 @@ public class Minmus extends Cbody{
         radius=600_000;
         mass=2.65*Math.pow(10,19);
         semiA = 47_000_000.0;
-        semiB = 47_000_000.0;
-
-        Random rand = new Random();
-        loc = new Vector2((float)(semiA) + parentBody.getX(), 0);
+        semiB = 27_000_000.0;
+        orbRotation = 45;
+        focus = findFocus(semiA, semiB);
+        loc = new Vector2(0f,0f);
+        moveOnOrbit(0);
         sprite.setSize((float)radius,(float)radius);
         sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
     }
+
+
 }
