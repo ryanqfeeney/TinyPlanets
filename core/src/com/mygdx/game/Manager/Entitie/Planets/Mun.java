@@ -3,7 +3,6 @@ package com.mygdx.game.Manager.Entitie.Planets;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.Random;
 
 public class Mun extends Cbody{
     public Mun(Cbody pBody){
@@ -17,6 +16,7 @@ public class Mun extends Cbody{
         mass=9.76*Math.pow(10,20);
         semiA = 9_000_000.0;
         semiB = 9_000_000.0;
+        soir = 2_429_559.1;
         orbRotation = 0;
         focus = findFocus(semiA, semiB);
         loc = new Vector2(0f,0f);

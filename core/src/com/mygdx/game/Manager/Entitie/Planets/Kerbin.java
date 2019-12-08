@@ -18,6 +18,7 @@ public class Kerbin extends Cbody{
         semiA = 13_600_000_000.0;
         semiB = 13_600_000_000.0;
         orbRotation = 0;
+        soir = 84_159_286.0;
         focus = findFocus(semiA, semiB);
         loc = new Vector2(0f,0f);
         moveOnOrbit(0);

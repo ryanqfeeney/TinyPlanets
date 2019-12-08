@@ -33,14 +33,16 @@ public class Cbody{
     protected double semiB;
     protected double orbRotation;
     protected double focus;
+    protected double soir;
 
     public Cbody(){
         loc = new Vector2(1f,1f);
-        children = new  ArrayList<Cbody>();
+        children = new  ArrayList<>();
         MULTIPLIER = 1;
         rotateRate = .0166;
         test = 0;
         orbRotation = 0;
+        soir = 0;
     }
 
 
@@ -59,20 +61,20 @@ public class Cbody{
 
         double h = Math.pow((semiA - semiB),2)/Math.pow((semiA + semiB),2);
         double p = Math.PI * (semiA+semiB) *( 1 + (3*h)/(10 + Math.sqrt(4-3*h)));
-
         p = p / (2 * Math.PI);
-        double q = this.t/(2*Math.PI*semiA);
+        double q = this.t/p;
 
-        float x = (float)(parentBody.getX() + semiA*Math.cos(this.t/p)*Math.cos(orbRotation) -
-                        semiB*Math.sin(this.t/p)*Math.sin(orbRotation) + focus*Math.cos(orbRotation));
+        float x = (float)(parentBody.getX() + semiA*Math.cos(q)*Math.cos(orbRotation) -
+                        semiB*Math.sin(q)*Math.sin(orbRotation) + focus*Math.cos(orbRotation));
 
-        float y = (float)(parentBody.getY() + semiA*Math.cos(this.t/p)*Math.sin(orbRotation) +
-                        semiB*Math.sin(this.t/p)*Math.cos(orbRotation) + focus*Math.sin(orbRotation));
+        float y = (float)(parentBody.getY() + semiA*Math.cos(q)*Math.sin(orbRotation) +
+                        semiB*Math.sin(q)*Math.cos(orbRotation) + focus*Math.sin(orbRotation));
 
         float dx = x - loc.x;
         float dy = y - loc.y;
 
         loc.set(x,y);
+
         for (Cbody child: children){
             child.loc.set(child.getX()+dx,child.getY()+dy);
         }
@@ -104,7 +106,6 @@ public class Cbody{
         return vel;
 
     }
-
 
     public float getX(){
         return loc.x;

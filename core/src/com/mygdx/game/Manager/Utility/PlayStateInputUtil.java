@@ -2,12 +2,13 @@ package com.mygdx.game.Manager.Utility;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Manager.Entitie.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 
-public class PlayStateCameraUtil {
+public class PlayStateInputUtil implements InputProcessor {
 
 
     float mv = 200000000;
@@ -22,10 +23,24 @@ public class PlayStateCameraUtil {
     PlayState ps;
     OrthographicCamera camera;
 
-    public PlayStateCameraUtil(PlayState ps){
+    public PlayStateInputUtil(PlayState ps){
         this.ps = ps;
         this.camera = ps.getCamera();
 
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        if(amount == -1){
+            camera.zoom *= zm;
+        }
+        else if(amount == 1){
+            camera.zoom /= zm;
+            if (camera.zoom == 0){
+                camera.zoom = .01f;
+            }
+        }
+        return false;
     }
 
     public void lookAtCbody(){
@@ -42,19 +57,19 @@ public class PlayStateCameraUtil {
         Cbody p = cb;
         float x = p.getX();
         float y = p.getY();
-        camera.position.x = x+camLX*mv;
-        camera.position.y = y+camLY*mv;
+        camera.position.x = x+camLX;
+        camera.position.y = y+camLY;
         camera.update();
     }
 
     public void handleInput(){
 
-        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.Q) ) {
             camera.zoom /= zm;
             //mv /= mvScale;
 
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.A) ) {
             camera.zoom *= zm;
            // mv *=mvScale;
 
@@ -127,6 +142,22 @@ public class PlayStateCameraUtil {
             }
         }
 
+        if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
+            int x1 = Gdx.input.getDeltaX();
+            int y1 = Gdx.input.getDeltaY();
+
+            if (camLock){
+                camLX-=(x1*camera.zoom);
+                camLY+=(y1*camera.zoom);
+            }
+            else{
+                camera.position.x -= (x1*camera.zoom);
+                camera.position.y += (y1*camera.zoom);
+            }
+        }
+
+
+
 //		camera.zoom = MathUtils.clamp(camera.zoom, 0.1f, 100/camera.viewportWidth);
 //
 //		float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
@@ -134,6 +165,42 @@ public class PlayStateCameraUtil {
 //
 //		camera.position.x = MathUtils.clamp(camera.position.x, effectiveViewportWidth / 2f, 100 - effectiveViewportWidth / 2f);
 //		camera.position.y = MathUtils.clamp(camera.position.y, effectiveViewportHeight / 2f, 100 - effectiveViewportHeight / 2f);
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
     }
 
 }

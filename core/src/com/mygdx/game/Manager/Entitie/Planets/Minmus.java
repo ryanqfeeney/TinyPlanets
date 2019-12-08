@@ -15,7 +15,8 @@ public class Minmus extends Cbody{
         radius=600_000;
         mass=2.65*Math.pow(10,19);
         semiA = 47_000_000.0;
-        semiB = 27_000_000.0;
+        semiB = 47_000_000.0;
+        soir = 2_247_428.4;
         orbRotation = 45;
         focus = findFocus(semiA, semiB);
         loc = new Vector2(0f,0f);

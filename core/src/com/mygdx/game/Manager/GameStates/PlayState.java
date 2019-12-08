@@ -1,12 +1,13 @@
 package com.mygdx.game.Manager.GameStates;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.mygdx.game.Manager.Entitie.Planets.*;
-import com.mygdx.game.Manager.Utility.PlayStateCameraUtil;
+import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
 
 import java.util.ArrayList;
 
@@ -15,7 +16,9 @@ public class PlayState extends GameState {
     TextureAtlas textureAtlas;
     SpriteBatch batch;
     ArrayList<Cbody> planets;
-    PlayStateCameraUtil pscu;
+    PlayStateInputUtil pscu;
+
+
 
     public PlayState(){
 
@@ -24,7 +27,9 @@ public class PlayState extends GameState {
         camera.zoom = 400000f;
         textureAtlas = new TextureAtlas("sprites.txt");
         batch = new SpriteBatch();
-        pscu = new PlayStateCameraUtil(this);
+        pscu = new PlayStateInputUtil(this);
+
+        Gdx.input.setInputProcessor(pscu);
 
         planets = new ArrayList<>();
 
