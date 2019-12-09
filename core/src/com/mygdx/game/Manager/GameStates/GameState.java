@@ -8,6 +8,7 @@ public class GameState {
 
     OrthographicCamera camera;
     ExtendViewport viewport;
+    
     public GameState(){
         int width = Gdx.graphics.getWidth();
         int height = Gdx.graphics.getHeight();

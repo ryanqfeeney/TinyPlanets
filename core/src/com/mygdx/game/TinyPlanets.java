@@ -28,6 +28,12 @@ public class TinyPlanets extends ApplicationAdapter {
 	public void render () {
 
 		float dt = Gdx.graphics.getDeltaTime();
+		System.out.println(dt);
+		if (dt > .025f){
+			dt = .025f;
+		}
+
+
 		gsm.handleInput();
 		gsm.render(dt);
 

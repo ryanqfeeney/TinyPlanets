@@ -1,13 +1,10 @@
-package com.mygdx.game.Manager.Entitie.Planets;
+package com.mygdx.game.Manager.Entity.Planets;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.sun.javafx.geom.Vec2d;
-import jdk.nashorn.internal.runtime.ECMAException;
+import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class Cbody{
@@ -21,6 +18,7 @@ public class Cbody{
     static double gravConstanat = 6.67*Math.pow(10,-11);
 
     ArrayList<Cbody> children;
+    ArrayList<Klobject> klobs;
 
     protected double t;
 
@@ -38,6 +36,7 @@ public class Cbody{
     public Cbody(){
         loc = new Vector2(1f,1f);
         children = new  ArrayList<>();
+        klobs = new  ArrayList<>();
         MULTIPLIER = 1;
         rotateRate = .0166;
         test = 0;
@@ -76,7 +75,10 @@ public class Cbody{
         loc.set(x,y);
 
         for (Cbody child: children){
-            child.loc.set(child.getX()+dx,child.getY()+dy);
+            child.getLoc().set(child.getX()+dx,child.getY()+dy);
+        }
+        for (Klobject child: klobs){
+            child.getLoc().set(child.getX()+dx,child.getY()+dy);
         }
     }
 
@@ -113,6 +115,11 @@ public class Cbody{
     public float getY(){
         return loc.y;
     }
+
+    public double getRadius() {
+        return radius;
+    }
+
     public String getName(){
         return name;
     }
@@ -125,8 +132,13 @@ public class Cbody{
     public void addChild(Cbody child){
         children.add(child);
     }
+    public void addKlob(Klobject klob){ klobs.add(klob);}
     public Vector2 getLoc(){
         return loc;
+    }
+
+    public double getMass(){
+        return mass;
     }
 }
 

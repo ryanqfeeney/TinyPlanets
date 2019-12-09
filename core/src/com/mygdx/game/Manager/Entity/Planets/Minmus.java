@@ -1,10 +1,10 @@
-package com.mygdx.game.Manager.Entitie.Planets;
+package com.mygdx.game.Manager.Entity.Planets;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
 
-public class Minmus extends Cbody{
+public class Minmus extends Cbody {
     public Minmus(Cbody pBody){
         super();
         textureAtlas = new TextureAtlas("sprites.txt");

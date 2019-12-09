@@ -1,12 +1,13 @@
 package com.mygdx.game.Manager.GameStates;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.mygdx.game.Manager.Entitie.Planets.*;
+import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
+import com.mygdx.game.Manager.Entity.Planets.*;
+import com.mygdx.game.Manager.Utility.Huds.PlayStateHud;
 import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
 
 import java.util.ArrayList;
@@ -14,42 +15,53 @@ import java.util.ArrayList;
 public class PlayState extends GameState {
 
     TextureAtlas textureAtlas;
-    SpriteBatch batch;
+    SpriteBatch batch;;
     ArrayList<Cbody> planets;
+    ArrayList<Klobject> klobjects;
     PlayStateInputUtil pscu;
 
+    PlayStateHud hud;
 
 
     public PlayState(){
 
 
         super();
+
         camera.zoom = 400000f;
         textureAtlas = new TextureAtlas("sprites.txt");
         batch = new SpriteBatch();
+        hud = new PlayStateHud(this,batch);
         pscu = new PlayStateInputUtil(this);
 
         Gdx.input.setInputProcessor(pscu);
 
         planets = new ArrayList<>();
+        klobjects = new ArrayList<>();
 
         planets.add(new Sun());
         planets.add(new Kerbin(planets.get(0)));
         planets.add(new Mun(planets.get(1)));
         planets.add(new Minmus(planets.get(1)));
 
+        klobjects.add(new Klobject(planets.get(1)));
+
 
     }
-
 
     @Override
     public void render(float dt) {
 
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        camera.update();
 
-        for (int i = 0; i < planets.size(); i++){
-            planets.get(i).update(dt);
+        hud.update(dt);
+        for (Cbody cb : planets){
+            cb.update(dt);
+        }
+        for (Klobject klob : klobjects){
+            klob.update(dt);
         }
 
 
@@ -57,12 +69,20 @@ public class PlayState extends GameState {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        for (int i = 0; i < planets.size(); i++) {
-            drawPlanet(planets.get(i));
+
+
+        for (Cbody cb : planets) {
+            drawPlanet(cb);
+        }
+        for (Klobject klob : klobjects){
+            drawKlob(klob);
         }
         batch.end();
 
-        camera.update();
+
+        batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        hud.stage.draw();
+
 
     }
 
@@ -73,6 +93,7 @@ public class PlayState extends GameState {
         super.dispose();
         textureAtlas.dispose();
         batch.dispose();
+        hud.dispose();
 
     }
 
@@ -83,6 +104,14 @@ public class PlayState extends GameState {
 
         planet.getSprite().draw(batch);
     }
+    private void drawKlob(Klobject klob) {
+        Sprite sprite = klob.getSprite();
+        sprite.setPosition(klob.getX()-sprite.getWidth()/2,
+                klob.getY()-sprite.getHeight()/2);
+
+        klob.getSprite().draw(batch);
+    }
+
 
 
     @Override
@@ -92,5 +121,13 @@ public class PlayState extends GameState {
 
     public ArrayList<Cbody> getPlanets(){
         return planets;
+    }
+
+    public ArrayList<Klobject> getKlobjects() {
+        return klobjects;
+    }
+
+    public PlayStateHud getHud() {
+        return hud;
     }
 }

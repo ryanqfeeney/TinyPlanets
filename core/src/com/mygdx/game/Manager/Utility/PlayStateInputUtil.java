@@ -5,7 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
-import com.mygdx.game.Manager.Entitie.Planets.Cbody;
+import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
+import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 
 public class PlayStateInputUtil implements InputProcessor {
@@ -19,6 +20,7 @@ public class PlayStateInputUtil implements InputProcessor {
     float camLX = 0;
     float camLY = 0;
     boolean camLock = true;
+    double mult = Math.pow(2,sp);
 
     PlayState ps;
     OrthographicCamera camera;
@@ -111,18 +113,29 @@ public class PlayStateInputUtil implements InputProcessor {
         if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
             if (look < ps.getPlanets().size()-1) look += 1;
         }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
             if (sp > 0) {
                 sp = sp - 1;
+                mult = Math.pow(2,sp);
+                ps.getHud().setMult(mult);
                 for (int i = 0; i < ps.getPlanets().size(); i++){
-                    ps.getPlanets().get(i).setMultiplier( Math.pow(3,sp) );
+                    ps.getPlanets().get(i).setMultiplier( Math.pow(2,sp) );
+                }
+                for (Klobject klob : ps.getKlobjects()){
+                    klob.setMultiplier(mult);
                 }
             }
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
             sp = sp + 1;
+            mult = Math.pow(2,sp);
+            ps.getHud().setMult(mult);
             for (int i = 0; i < ps.getPlanets().size(); i++){
-                ps.getPlanets().get(i).setMultiplier( Math.pow(3,sp) );
+                ps.getPlanets().get(i).setMultiplier( mult );
+            }
+            for (Klobject klob : ps.getKlobjects()){
+                klob.setMultiplier(mult);
             }
         }
         if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){

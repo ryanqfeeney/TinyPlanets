@@ -1,4 +1,4 @@
-package com.mygdx.game.Manager.Entitie.Planets;
+package com.mygdx.game.Manager.Entity.Planets;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
