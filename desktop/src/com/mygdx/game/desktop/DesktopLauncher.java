@@ -13,7 +13,6 @@ public class DesktopLauncher {
 		cfg.height = 1080;
 		//cfg.foregroundFPS = 3;
 		cfg.fullscreen = true;
-
 		new LwjglApplication(new TinyPlanets(), cfg);
 	}
 }

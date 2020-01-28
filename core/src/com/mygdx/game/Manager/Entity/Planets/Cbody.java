@@ -2,8 +2,9 @@ package com.mygdx.game.Manager.Entity.Planets;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
+import math.geom2d.Point2D;
+
 
 import java.util.ArrayList;
 
@@ -13,7 +14,7 @@ public class Cbody{
     TextureAtlas textureAtlas;
     Sprite sprite;
     Cbody parentBody;
-    Vector2 loc;
+    Point2D loc;
     double MULTIPLIER;
     static double gravConstanat = 6.67*Math.pow(10,-11);
 
@@ -26,7 +27,6 @@ public class Cbody{
     protected double mass;
     protected double rotateRate;
 
-    protected double test;
     protected double semiA;
     protected double semiB;
     protected double orbRotation;
@@ -34,14 +34,14 @@ public class Cbody{
     protected double soir;
 
     public Cbody(){
-        loc = new Vector2(1f,1f);
+        loc = new Point2D(1,1);
         children = new  ArrayList<>();
         klobs = new  ArrayList<>();
         MULTIPLIER = 1;
         rotateRate = .0166;
-        test = 0;
         orbRotation = 0;
         soir = 0;
+
     }
 
 
@@ -63,22 +63,22 @@ public class Cbody{
         p = p / (2 * Math.PI);
         double q = this.t/p;
 
-        float x = (float)(parentBody.getX() + semiA*Math.cos(q)*Math.cos(orbRotation) -
+        double x = (parentBody.getX() + semiA*Math.cos(q)*Math.cos(orbRotation) -
                         semiB*Math.sin(q)*Math.sin(orbRotation) + focus*Math.cos(orbRotation));
 
-        float y = (float)(parentBody.getY() + semiA*Math.cos(q)*Math.sin(orbRotation) +
+        double y =  (parentBody.getY() + semiA*Math.cos(q)*Math.sin(orbRotation) +
                         semiB*Math.sin(q)*Math.cos(orbRotation) + focus*Math.sin(orbRotation));
 
-        float dx = x - loc.x;
-        float dy = y - loc.y;
+        double dx = x - loc.getX();
+        double dy = y - loc.getY();
 
-        loc.set(x,y);
+        loc = new Point2D(x,y);
 
         for (Cbody child: children){
-            child.getLoc().set(child.getX()+dx,child.getY()+dy);
+            child.setLoc(new Point2D(child.getX()+dx,child.getY()+dy));
         }
         for (Klobject child: klobs){
-            child.getLoc().set(child.getX()+dx,child.getY()+dy);
+            child.setLoc(new Point2D(child.getX()+dx,child.getY()+dy));
         }
     }
 
@@ -89,7 +89,7 @@ public class Cbody{
 
     public double calculateVelocity() {
 
-        double dist = loc.dst(parentBody.loc);
+        double dist = loc.distance(parentBody.loc);
         if (Double.isNaN(dist)){
             System.out.println("BREAK BECAUSE NAN ON CALC VELOCITY "+getName());
             System.exit(0);
@@ -109,11 +109,11 @@ public class Cbody{
 
     }
 
-    public float getX(){
-        return loc.x;
+    public double getX(){
+        return loc.getX();
     }
-    public float getY(){
-        return loc.y;
+    public double getY(){
+        return loc.getY();
     }
 
     public double getRadius() {
@@ -133,9 +133,10 @@ public class Cbody{
         children.add(child);
     }
     public void addKlob(Klobject klob){ klobs.add(klob);}
-    public Vector2 getLoc(){
+    public Point2D getLoc(){
         return loc;
     }
+    public void setLoc(Point2D newLoc) { loc = newLoc;}
 
     public double getMass(){
         return mass;

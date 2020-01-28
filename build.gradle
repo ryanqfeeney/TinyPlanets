@@ -11,7 +11,7 @@ buildscript {
     }
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.9'
-        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath 'com.android.tools.build:gradle:3.5.0'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.8'
         
 
@@ -22,7 +22,7 @@ allprojects {
 
     version = '1.0'
     ext {
-        appName = "TinyPlanetsq"
+        appName = "TinyPlanets"
         gdxVersion = '1.9.10'
         roboVMVersion = '2.3.8'
         box2DLightsVersion = '1.4'
@@ -63,6 +63,7 @@ project(":android") {
     configurations { natives }
 
     dependencies {
+        implementation fileTree(dir:"../core/libs", include: "*.jar")
         implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
@@ -118,6 +119,7 @@ project(":core") {
 
 
     dependencies {
+        implementation fileTree(dir:"libs", include: "*.jar")
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         

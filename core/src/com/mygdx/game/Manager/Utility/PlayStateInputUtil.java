@@ -48,24 +48,29 @@ public class PlayStateInputUtil implements InputProcessor {
     public void lookAtCbody(){
         if (!camLock){return;}
         Cbody p = ps.getPlanets().get(look);
-        float x = p.getX();
-        float y = p.getY();
-        camera.position.x = x+camLX;
-        camera.position.y = y+camLY;
+        double x = p.getX();
+        double y = p.getY();
+        camera.position.x = (float)(x+camLX);
+        camera.position.y = (float)(y+camLY);
         camera.update();
     }
     public void lookAtCbody(Cbody cb){
         if (!camLock){return;}
         Cbody p = cb;
-        float x = p.getX();
-        float y = p.getY();
-        camera.position.x = x+camLX;
-        camera.position.y = y+camLY;
+        double x = p.getX();
+        double y = p.getY();
+        camera.position.x = (float)(x+camLX);
+        camera.position.y = (float)(y+camLY);
         camera.update();
     }
 
     public void handleInput(){
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M) ) {
+            ps.getKlobjects().get(0).acceleration = !ps.getKlobjects().get(0).acceleration;
+            //mv /= mvScale;
+
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.Q) ) {
             camera.zoom /= zm;
             //mv /= mvScale;
@@ -148,7 +153,7 @@ public class PlayStateInputUtil implements InputProcessor {
                 if(ps.getPlanets().get(i).getSprite().getBoundingRectangle().contains(input.x,input.y)) {
 
                     Cbody p = ps.getPlanets().get(i);
-                    camera.position.slerp(new Vector3(p.getX(),p.getY(),0f),.2f);
+                    camera.position.slerp(new Vector3((float)p.getX(),(float)p.getY(),0f),.2f);
                     look = i;
                     break;
                 }

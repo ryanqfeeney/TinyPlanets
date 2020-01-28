@@ -79,7 +79,6 @@ public class PlayState extends GameState {
         }
         batch.end();
 
-
         batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
 
@@ -99,15 +98,15 @@ public class PlayState extends GameState {
 
     private void drawPlanet(Cbody planet) {
         Sprite sprite = planet.getSprite();
-        sprite.setPosition(planet.getX()-sprite.getWidth()/2,
-                           planet.getY()-sprite.getHeight()/2);
+        sprite.setPosition(((float)(planet.getX()-sprite.getWidth()/2)),
+                (float)(planet.getY()-sprite.getHeight()/2));
 
         planet.getSprite().draw(batch);
     }
     private void drawKlob(Klobject klob) {
         Sprite sprite = klob.getSprite();
-        sprite.setPosition(klob.getX()-sprite.getWidth()/2,
-                klob.getY()-sprite.getHeight()/2);
+        sprite.setPosition((float)(klob.getX()-sprite.getWidth()/2),
+                (float)(klob.getY()-sprite.getHeight()/2));
 
         klob.getSprite().draw(batch);
     }

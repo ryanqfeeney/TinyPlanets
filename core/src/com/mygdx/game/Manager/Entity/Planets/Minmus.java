@@ -1,7 +1,7 @@
 package com.mygdx.game.Manager.Entity.Planets;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Vector2;
+import math.geom2d.Point2D;
 
 
 public class Minmus extends Cbody {
@@ -19,7 +19,7 @@ public class Minmus extends Cbody {
         soir = 2_247_428.4;
         orbRotation = 45;
         focus = findFocus(semiA, semiB);
-        loc = new Vector2(0f,0f);
+        loc = new Point2D(0,0);
         moveOnOrbit(0);
         sprite.setSize((float)radius,(float)radius);
         sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
