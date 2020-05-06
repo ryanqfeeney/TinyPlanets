@@ -44,7 +44,7 @@ public class PlayState extends GameState {
         planets.add(new Mun(planets.get(1)));
         planets.add(new Minmus(planets.get(1)));
 
-        klobjects.add(new Klobject(planets.get(1)));
+        klobjects.add(new Klobject(this, planets.get(1)));
 
 
     }

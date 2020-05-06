@@ -11,7 +11,6 @@ public class DesktopLauncher {
 		cfg.title = "TinyPlanets";
 		cfg.width = 1920;
 		cfg.height = 1080;
-		//cfg.foregroundFPS = 3;
 		cfg.fullscreen = true;
 		new LwjglApplication(new TinyPlanets(), cfg);
 	}

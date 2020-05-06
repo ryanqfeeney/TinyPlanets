@@ -141,6 +141,18 @@ public class Cbody{
     public double getMass(){
         return mass;
     }
+
+    public double getSoir() {
+        return soir;
+    }
+
+    public Cbody getParentBody() {
+        return parentBody;
+    }
+
+    public void setParentBody(Cbody parentBody) {
+        this.parentBody = parentBody;
+    }
 }
 
 

@@ -34,10 +34,10 @@ public class PlayStateInputUtil implements InputProcessor {
     @Override
     public boolean scrolled(int amount) {
         if(amount == -1){
-            camera.zoom *= zm;
+            camera.zoom /= zm;
         }
         else if(amount == 1){
-            camera.zoom /= zm;
+            camera.zoom *= zm;
             if (camera.zoom == 0){
                 camera.zoom = .01f;
             }
