@@ -7,13 +7,8 @@ import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
-import org.apache.commons.math3.analysis.function.Tan;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
-
-public class Klobject {
+public class Klobject2 {
 
     int sp = 200;
 
@@ -112,7 +107,7 @@ public class Klobject {
     protected double orbRotation;
     protected double focus;
 
-    public Klobject(PlayState pstate, Cbody cb) {
+    public Klobject2(PlayState pstate, Cbody cb) {
 
         ps = pstate;
         mass = 1;
@@ -121,7 +116,7 @@ public class Klobject {
         parentBody = cb;
         acceleration = false;
 
-        cb.addKlob(this);
+        cb.addKlob(new Klobject(ps,cb));
 
         state = new State();
 //        state.pos = new Point2D((parentBody.getX()+ Math.cos(Math.PI/4)*900_000   ),
@@ -141,7 +136,7 @@ public class Klobject {
         bake();
     }
 
-    public Klobject (PlayState ps,Cbody cb, Point2D pos, Point2D vel){
+    public Klobject2 (PlayState ps,Cbody cb, Point2D pos, Point2D vel){
         this(ps,cb);
         state.pos = pos;
         state.vel = vel;
@@ -248,35 +243,20 @@ public class Klobject {
 
         double x , y;
 
-        if (ecc < 1.0) {
-            double h = Math.pow((semiA - semiB), 2) / Math.pow((semiA + semiB), 2);
-            double p = Math.PI * (semiA + semiB) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h)));
 
-            double tt = ((this.t) / p) * 2 * Math.PI; // <-- something fishy maybe going on here mean and eccentric anomaly
-            double q = tt + startAnom;
-
-            x = (parentBody.getX() + semiA * Math.cos(q) * Math.cos(w) -
-                    semiB * Math.sin(q) * Math.sin(w) - focus * Math.cos(w));
-
-            y = (parentBody.getY() + semiA * Math.cos(q) * Math.sin(w) +
-                    semiB * Math.sin(q) * Math.cos(w) - focus * Math.sin(w));
-
-        }
-        else {
-
-            double dSd0 = (((peri * (1+ecc) * Math.sqrt(1+Math.pow(ecc,2) +(2*ecc*Math.cos(Tanom)))) / Math.pow(1+(ecc*Math.cos(Tanom)),2)));
-            double q = this.s * (1/dSd0) + startAnom;
-            startAnom = q;
-            double rr = (semiA*(1-(ecc*ecc))) / (1 + (ecc * Math.cos(q)));
-            x = parentBody.getX() + rr*Math.cos(q + w);
-            y = parentBody.getY() + rr*Math.sin(q + w);
-            System.out.println("yes");
+        double dSd0 = (((peri * (1+ecc) * Math.sqrt(1+Math.pow(ecc,2) +(2*ecc*Math.cos(Tanom)))) / Math.pow(1+(ecc*Math.cos(Tanom)),2)));
+        double q = this.s * (1/dSd0) + startAnom;
+        startAnom = q;
+        double rr = (semiA*(1-(ecc*ecc))) / (1 + (ecc * Math.cos(q)));
+        x = parentBody.getX() + rr*Math.cos(q + w);
+        y = parentBody.getY() + rr*Math.sin(q + w);
+        System.out.println("yes");
 
 //            if (getLoc().distance(parentBody.getLoc()) > parentBody.getSoir()){
 //                parentBody = parentBody.getParentBody();
 //            };
 
-        }
+
 
         state.pos = new Point2D(x, y);
 
@@ -291,8 +271,8 @@ public class Klobject {
 
         if ( ecc < 1) {
             state.vel =
-            new Point2D(-semiA * Math.sin(Eanom) * Math.cos(w) - semiB * Math.cos(Eanom) * Math.sin(w),
-                        semiB * Math.cos(Eanom) * Math.cos(w) - semiA * Math.sin(Eanom) * Math.sin(w));
+                    new Point2D(-semiA * Math.sin(Eanom) * Math.cos(w) - semiB * Math.cos(Eanom) * Math.sin(w),
+                            semiB * Math.cos(Eanom) * Math.cos(w) - semiA * Math.sin(Eanom) * Math.sin(w));
 
             double normMid = state.vel.distance(0, 0);
             state.vel = state.vel.scale(velo / normMid);
@@ -373,8 +353,8 @@ public class Klobject {
         }
         else{
 
-           // Eanom = new Acosh().value((Math.cos(Tanom) + ecc) / (1 + ecc * Math.cos(Tanom))); < -- works the same worried for bounding reasons. [ 1 , +inf )
-           Eanom = new Atanh().value(Math.sqrt((ecc-1)/(ecc+1))*Math.tan(Tanom/2))*2;
+            // Eanom = new Acosh().value((Math.cos(Tanom) + ecc) / (1 + ecc * Math.cos(Tanom))); < -- works the same worried for bounding reasons. [ 1 , +inf )
+            Eanom = new Atanh().value(Math.sqrt((ecc-1)/(ecc+1))*Math.tan(Tanom/2))*2;
 
         }
 

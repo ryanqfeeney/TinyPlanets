@@ -121,6 +121,7 @@ public class PlayStateInputUtil implements InputProcessor {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
             if (sp > 0) {
+                System.out.println("WARP DOWN      <-------");
                 sp = sp - 1;
                 mult = Math.pow(2,sp);
                 ps.getHud().setMult(mult);
@@ -130,9 +131,11 @@ public class PlayStateInputUtil implements InputProcessor {
                 for (Klobject klob : ps.getKlobjects()){
                     klob.setMultiplier(mult);
                 }
+
             }
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
+            System.out.println("WARP UP      <-------");
             sp = sp + 1;
             mult = Math.pow(2,sp);
             ps.getHud().setMult(mult);
@@ -142,6 +145,7 @@ public class PlayStateInputUtil implements InputProcessor {
             for (Klobject klob : ps.getKlobjects()){
                 klob.setMultiplier(mult);
             }
+
         }
         if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
             int x1 = Gdx.input.getX();
