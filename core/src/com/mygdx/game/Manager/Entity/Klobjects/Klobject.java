@@ -3,97 +3,25 @@ package com.mygdx.game.Manager.Entity.Klobjects;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
-import org.apache.commons.math3.analysis.function.Tan;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 
 public class Klobject {
 
-    int sp = 200;
-
-    class State {
-        Point2D pos;
-        Point2D vel;
-
-        State() {
-            pos = new Point2D(0, 0);
-            vel = new Point2D(0, 0);
-        }
-    }
-
-    class Derivative {
-        Point2D dpos;
-        Point2D dvel;
-
-        Derivative() {
-            dpos = new Point2D(0, 0);
-            dvel = new Point2D(0, 0);
-        }
-    }
-
-    Derivative evaluate(State init,
-                        float dt,
-                        Derivative d) {
-        State state = new State();
-        state.pos = init.pos.plus(d.dpos.scale(dt));
-        state.vel = init.vel.plus(d.dvel.scale(dt));
-
-        Derivative output = new Derivative();
-        output.dpos = state.vel;
-        output.dvel = acceleration(state);
-        return output;
-    }
-
-    Point2D acceleration(State state) {
-        Double a;
-        Double forcedub;
-        Point2D force;
-        Point2D loc = state.pos;
-
-        a = Math.atan2(loc.getX() - parentBody.getX(), loc.getY() - parentBody.getY());
-        a = Math.toRadians(90) - a;
-
-        forcedub = ((sp * sp) * (gravConstanat * parentBody.getMass()) / Math.pow(loc.distance(parentBody.getLoc()), 2));
-        force = new Point2D(((-1) * forcedub * Math.cos(a)), ((-1) * forcedub * Math.sin(a)));
-
-        return force;
-    }
-
-    void integrate(State state,
-                   float dt) {
-        Derivative a, b, c, d;
-
-        a = evaluate(state, 0.0f, new Derivative());
-        b = evaluate(state, dt * 0.5f, a);
-        c = evaluate(state, dt * 0.5f, b);
-        d = evaluate(state, dt, c);
-
-        Point2D dxdt = (a.dpos.plus((b.dpos.plus(c.dpos)).scale(2.0)).plus(d.dpos)).scale(1.0 / 6.0);
-
-        Point2D dvdt = (a.dvel.plus((b.dvel.plus(c.dvel)).scale(2.0)).plus(d.dvel)).scale(1.0 / 6.0);
-
-        state.pos = state.pos.plus(dxdt.scale(dt));
-        state.vel = state.vel.plus(dvdt.scale(dt));
-
-    }
-
-////////////////////////////////////////////////////
-    //***************************
-////////////////////////////////////////////////////
+    int sp = 1;
 
     String name;
     TextureAtlas textureAtlas;
-    Sprite sprite;
+    Sprite klobSprite;
+    ShapeRenderer path;
     Cbody parentBody;
     State state;
     PlayState ps;
-
 
 
     public boolean acceleration;
@@ -102,14 +30,12 @@ public class Klobject {
     double MULTIPLIER;
     static double gravConstanat = 6.67 * Math.pow(10, -11);
 
-    double semiA, semiB, peri, ecc, w, Eanom, Manom, Tanom, startAnom, dTanom;
+    double semiA, semiB, peri, ecc, w, Eanom, Manom, Tanom, startAnom;
     Point2D eccVecc;
 
     protected double t, s;
-    protected double tTest;
     protected double mass;
     protected double rotateRate;
-    protected double orbRotation;
     protected double focus;
 
     public Klobject(PlayState pstate, Cbody cb) {
@@ -124,20 +50,29 @@ public class Klobject {
         cb.addKlob(this);
 
         state = new State();
-//        state.pos = new Point2D((parentBody.getX()+ Math.cos(Math.PI/4)*900_000   ),
-//                        (parentBody.getY()+Math.sin(Math.PI/4)*900_000 ));
-//
-//        state.vel = new Point2D(Math.cos(Math.PI/4)*sp*2805.800 ,-Math.sin(Math.PI/4)*sp*2805.800);
 
-        state.pos = new Point2D(parentBody.getX() + 900_000 , parentBody.getY());
-        state.vel = new Point2D(0,0+sp*3905.800);
+        //////////////////////////////
+        //***
+        //////////////////////////////
+
+        Double rote = Math.toRadians(135);
+        double dist = 900_000;
+        double vel = 2290.0*sp; // positive goes ccw similar to angles // K
+
+
+        state.pos = new Point2D(parentBody.getX() + Math.cos(rote)*dist,
+                                parentBody.getY() + Math.sin(rote)*dist);
+
+        state.vel = new Point2D(-Math.sin(rote)*vel,
+                                Math.cos(rote)*vel);
 
 
         textureAtlas = new TextureAtlas("spaceship.txt");
         name = "spaceship";
-        sprite = textureAtlas.createSprite(name);
-        sprite.setScale(800f, 800f);
-        sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2);
+        klobSprite = textureAtlas.createSprite(name);
+        path = new ShapeRenderer();
+        klobSprite.setScale(25f, 25f);
+        klobSprite.setOrigin(klobSprite.getWidth() / 2, klobSprite.getHeight() / 2);
         bake();
     }
 
@@ -150,14 +85,14 @@ public class Klobject {
 
     public void update(float dt) {
 
-        if (MULTIPLIER == 1 && !acceleration) {
+        if (MULTIPLIER == 1) {
+        try {
             oneXupdate(dt);
-            try {
-                bake();
-            } catch (Exception e) {
-                System.out.println("BAKE FAILED");
-                System.out.println(e);
-            }
+            bake();
+        } catch (Exception e) {
+            System.out.println("BAKE FAILED");
+            System.out.println(e);
+        }
         } else {
             moveOnOrbit(dt);
         }
@@ -204,28 +139,20 @@ public class Klobject {
             ccw = false;
         }
         ecc = eccVecc.distance(0, 0);
+        if (ecc == 1){ ecc = 1 + Double.MIN_VALUE; }
 
 
         semiA = (gm * r) / (2 * gm - r * velSq);
         semiB = semiA * (Math.sqrt((1 - Math.pow(ecc, 2))));
         peri = semiA * ( 1 - ecc);
         focus = findFocus(semiA, semiB);
-
-        dTanom = Tanom;
         calcAnomalies();
 
-        if (ecc < 1){
-            startAnom = Eanom;
-        }
-        else{
-            startAnom = Tanom;
+        startAnom = Tanom;
+
+        if (ecc > 1){
             semiB = -semiA*Math.sqrt(ecc*ecc - 1);
         }
-
-
-
-
-
 
     }
 
@@ -233,9 +160,7 @@ public class Klobject {
     public void moveOnOrbit(float dt) {
         double velo;
 
-
         velo = state.vel.distance(0, 0);
-
 
         if (ccw) {
             this.t += MULTIPLIER * velo * dt;  // <--- add for counter clock wise
@@ -248,46 +173,23 @@ public class Klobject {
 
         double x , y;
 
-        if (ecc < 1.0) {
-            double h = Math.pow((semiA - semiB), 2) / Math.pow((semiA + semiB), 2);
-            double p = Math.PI * (semiA + semiB) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h)));
-
-            double tt = ((this.t) / p) * 2 * Math.PI; // <-- something fishy maybe going on here mean and eccentric anomaly
-            double q = tt + startAnom;
-
-            x = (parentBody.getX() + semiA * Math.cos(q) * Math.cos(w) -
-                    semiB * Math.sin(q) * Math.sin(w) - focus * Math.cos(w));
-
-            y = (parentBody.getY() + semiA * Math.cos(q) * Math.sin(w) +
-                    semiB * Math.sin(q) * Math.cos(w) - focus * Math.sin(w));
-
-        }
-        else {
-
-            double dSd0 = (((peri * (1+ecc) * Math.sqrt(1+Math.pow(ecc,2) +(2*ecc*Math.cos(Tanom)))) / Math.pow(1+(ecc*Math.cos(Tanom)),2)));
-            double q = this.s * (1/dSd0) + startAnom;
-            startAnom = q;
-            double rr = (semiA*(1-(ecc*ecc))) / (1 + (ecc * Math.cos(q)));
-            x = parentBody.getX() + rr*Math.cos(q + w);
-            y = parentBody.getY() + rr*Math.sin(q + w);
-            System.out.println("yes");
+        double dSd0 = (((peri * (1+ecc) * Math.sqrt(1+Math.pow(ecc,2) +(2*ecc*Math.cos(Tanom)))) / Math.pow(1+(ecc*Math.cos(Tanom)),2)));
+        double q = this.s * (1/dSd0) + startAnom;
+        startAnom = q;
+        double rr = (semiA*(1-(ecc*ecc))) / (1 + (ecc * Math.cos(q)));
+        x = parentBody.getX() + rr*Math.cos(q + w);
+        y = parentBody.getY() + rr*Math.sin(q + w);
 
 //            if (getLoc().distance(parentBody.getLoc()) > parentBody.getSoir()){
 //                parentBody = parentBody.getParentBody();
 //            };
 
-        }
 
         state.pos = new Point2D(x, y);
 
         velo = calculateVelocity() * sp;
 
-
-
-
-        dTanom = Tanom;
         calcAnomalies();
-
 
         if ( ecc < 1) {
             state.vel =
@@ -372,9 +274,7 @@ public class Klobject {
                     (ecc + Math.cos(Tanom)));
         }
         else{
-
-           // Eanom = new Acosh().value((Math.cos(Tanom) + ecc) / (1 + ecc * Math.cos(Tanom))); < -- works the same worried for bounding reasons. [ 1 , +inf )
-           Eanom = new Atanh().value(Math.sqrt((ecc-1)/(ecc+1))*Math.tan(Tanom/2))*2;
+            Eanom = new Atanh().value(Math.sqrt((ecc-1)/(ecc+1))*Math.tan(Tanom/2))*2;
 
         }
 
@@ -382,11 +282,33 @@ public class Klobject {
 
     }
 
+    public void updatePathSprite(){
 
-    public void rotate(float dt) {
-        sprite.rotate((float) ((rotateRate * dt * MULTIPLIER) % 360));
+
+        path = new ShapeRenderer();
+        path.setProjectionMatrix(ps.getCamera().combined);
+        path.begin(ShapeRenderer.ShapeType.Line);
+        path.translate( (float) (getParentBody().getLoc().getX()) - (float)(semiA) - (float) (Math.cos(w)*(semiA-peri)),
+                        (float) (getParentBody().getLoc().getY()) - (float)(semiB) - (float) (Math.sin(w)*(semiA-peri)),0);
+
+        try{
+            path.ellipse(0,0,(float)(2*semiA),(float)(2*semiB),(float)Math.toDegrees(getW()));
+        }
+        catch (ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
+        }
+
+        path.setColor(255f,0f,0,255f);
+        path.end();
+
     }
 
+
+    public void rotate(float dt) {
+        klobSprite.rotate((float) ((rotateRate * dt * MULTIPLIER) % 360));
+    }
+
+    public double getW() {        return w;    }
 
     public double findFocus(double a, double b) {
         return Math.sqrt(a * a - b * b);
@@ -408,10 +330,13 @@ public class Klobject {
         return name;
     }
 
-    public Sprite getSprite() {
-        return sprite;
+    public Sprite getKlobSprite() {
+        return klobSprite;
     }
 
+    public ShapeRenderer getPathSprite() {
+        return path;
+    }
     public void setMultiplier(double mult) {
         MULTIPLIER = mult;
     }
@@ -432,12 +357,75 @@ public class Klobject {
         return parentBody;
     }
 
-    public void setParentBody(Cbody parentBody) {
-        this.parentBody = parentBody;
+    public Point2D getVel() { return state.vel;}
+
+    public void setVel(Point2D in) {state.vel = in;}
+
+    public void setParentBody(Cbody parentBody) { this.parentBody = parentBody;  }
+
+    class State {
+        Point2D pos;
+        Point2D vel;
+
+        State() {
+            pos = new Point2D(0, 0);
+            vel = new Point2D(0, 0);
+        }
+    }
+
+    class Derivative {
+        Point2D dpos;
+        Point2D dvel;
+
+        Derivative() {
+            dpos = new Point2D(0, 0);
+            dvel = new Point2D(0, 0);
+        }
+    }
+
+    Derivative evaluate(State init,
+                        float dt,
+                        Derivative d) {
+        State state = new State();
+        state.pos = init.pos.plus(d.dpos.scale(dt));
+        state.vel = init.vel.plus(d.dvel.scale(dt));
+
+        Derivative output = new Derivative();
+        output.dpos = state.vel;
+        output.dvel = acceleration(state);
+        return output;
+    }
+
+    Point2D acceleration(State state) {
+        Double a;
+        Double forcedub;
+        Point2D force;
+        Point2D loc = state.pos;
+
+        a = Math.atan2(loc.getX() - parentBody.getX(), loc.getY() - parentBody.getY());
+        a = Math.toRadians(90) - a;
+
+        forcedub = ((sp * sp) * (gravConstanat * parentBody.getMass()) / Math.pow(loc.distance(parentBody.getLoc()), 2));
+        force = new Point2D(((-1) * forcedub * Math.cos(a)), ((-1) * forcedub * Math.sin(a)));
+
+        return force;
+    }
+
+    void integrate(State state,
+                   float dt) {
+        Derivative a, b, c, d;
+
+        a = evaluate(state, 0.0f, new Derivative());
+        b = evaluate(state, dt * 0.5f, a);
+        c = evaluate(state, dt * 0.5f, b);
+        d = evaluate(state, dt, c);
+
+        Point2D dxdt = (a.dpos.plus((b.dpos.plus(c.dpos)).scale(2.0)).plus(d.dpos)).scale(1.0 / 6.0);
+
+        Point2D dvdt = (a.dvel.plus((b.dvel.plus(c.dvel)).scale(2.0)).plus(d.dvel)).scale(1.0 / 6.0);
+
+        state.pos = state.pos.plus(dxdt.scale(dt));
+        state.vel = state.vel.plus(dvdt.scale(dt));
+
     }
 }
-
-
-//            line 250 uner double rr
-//            x = parentBody.getX() - semiA * ( ecc - Math.cosh(startAnom));
-//            y = parentBody.getY() - semiA * (Math.sqrt(ecc*ecc - 1)) * Math.sinh(startAnom);

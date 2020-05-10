@@ -3,6 +3,7 @@ package com.mygdx.game.Manager.Entity.Planets;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
+import com.mygdx.game.Manager.Entity.Klobjects.Klobject2;
 import math.geom2d.Point2D;
 
 
@@ -20,6 +21,7 @@ public class Cbody{
 
     ArrayList<Cbody> children;
     ArrayList<Klobject> klobs;
+    ArrayList<Klobject2> klobs2;
 
     protected double t;
 
@@ -37,6 +39,7 @@ public class Cbody{
         loc = new Point2D(1,1);
         children = new  ArrayList<>();
         klobs = new  ArrayList<>();
+        klobs2 = new  ArrayList<>();
         MULTIPLIER = 1;
         rotateRate = .0166;
         orbRotation = 0;
@@ -78,6 +81,9 @@ public class Cbody{
             child.setLoc(new Point2D(child.getX()+dx,child.getY()+dy));
         }
         for (Klobject child: klobs){
+            child.setLoc(new Point2D(child.getX()+dx,child.getY()+dy));
+        }
+        for (Klobject2 child: klobs2){
             child.setLoc(new Point2D(child.getX()+dx,child.getY()+dy));
         }
     }
@@ -133,6 +139,7 @@ public class Cbody{
         children.add(child);
     }
     public void addKlob(Klobject klob){ klobs.add(klob);}
+    public void addKlob(Klobject2 klob){ klobs2.add(klob);}
     public Point2D getLoc(){
         return loc;
     }

@@ -16,10 +16,9 @@ import java.util.ArrayList;
 public class PlayState extends GameState {
 
     TextureAtlas textureAtlas;
-    SpriteBatch batch;;
+    SpriteBatch batch;
     ArrayList<Cbody> planets;
     ArrayList<Klobject> klobjects;
-    ArrayList<Klobject2> klobjects2;
     PlayStateInputUtil pscu;
 
     PlayStateHud hud;
@@ -40,7 +39,6 @@ public class PlayState extends GameState {
 
         planets = new ArrayList<>();
         klobjects = new ArrayList<>();
-        klobjects2 = new ArrayList<>();
 
         planets.add(new Sun());
         planets.add(new Kerbin(planets.get(0)));
@@ -48,8 +46,6 @@ public class PlayState extends GameState {
         planets.add(new Minmus(planets.get(1)));
 
         klobjects.add(new Klobject(this, planets.get(1)));
-        klobjects2.add(new Klobject2(this, planets.get(1)));
-
 
     }
 
@@ -69,11 +65,15 @@ public class PlayState extends GameState {
         }
 
 
+
         pscu.lookAtCbody();
 
         batch.setProjectionMatrix(camera.combined);
-        batch.begin();
+        for (Klobject klob : klobjects){
+            klob.updatePathSprite();
+        }
 
+        batch.begin();
 
         for (Cbody cb : planets) {
             drawPlanet(cb);
@@ -82,6 +82,7 @@ public class PlayState extends GameState {
             drawKlob(klob);
         }
         batch.end();
+
 
         batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
@@ -108,12 +109,14 @@ public class PlayState extends GameState {
         planet.getSprite().draw(batch);
     }
     private void drawKlob(Klobject klob) {
-        Sprite sprite = klob.getSprite();
+        Sprite sprite = klob.getKlobSprite();
         sprite.setPosition((float)(klob.getX()-sprite.getWidth()/2),
                 (float)(klob.getY()-sprite.getHeight()/2));
 
-        klob.getSprite().draw(batch);
+        klob.getKlobSprite().draw(batch);
+
     }
+
 
 
 

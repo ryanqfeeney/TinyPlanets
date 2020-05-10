@@ -30,8 +30,6 @@ public class PlayStateHud implements Disposable{
         stage = new Stage(viewport,sb );
 
 
-
-
         multLabel = new Label("MULTIPLIER", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         multNumberLabel = new Label(String.format("%06d", mult), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
