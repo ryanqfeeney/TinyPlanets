@@ -9,19 +9,17 @@ import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
 import org.apache.commons.math3.analysis.function.Tan;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 
 public class Klobject2 extends Klobject {
 
-    public Klobject2(PlayState pstate, Cbody cb) {
-        super(pstate, cb);
+    public Klobject2(Cbody cb,PlayState pstate) {
+        super( cb,pstate);
         klobSprite.rotate(180);
     }
 
     public Klobject2(PlayState ps, Cbody cb, Point2D pos, Point2D vel) {
-        super(ps, cb, pos, vel);
+        super(cb,ps, pos, vel);
     }
 
     //ORIGINAL METHOD FOR MOVE ON ORBIT> IN BAKE(), startAnom HAS TO BE SET TO Eanom FOR THIS TO FUNCTION PROPERLY IN ELLIPTICAL ORBITS
@@ -36,17 +34,17 @@ public class Klobject2 extends Klobject {
     }
 
     @Override
-    public void moveOnOrbit(float dt) {
+    public void moveOnOrbit(double dt) {
         double velo;
 
         velo = state.vel.distance(0, 0);
 
         if (ccw) {
-            this.t += MULTIPLIER * velo * dt;  // <--- add for counter clock wise
+            //this.t += MULTIPLIER * velo * dt;  // <--- add for counter clock wise
             this.s = MULTIPLIER * velo * dt;
 
         } else {
-            this.t -= MULTIPLIER * velo * dt;  // <--- subtract for clockwise
+            //this.t -= MULTIPLIER * velo * dt;  // <--- subtract for clockwise
             this.s = -MULTIPLIER * velo * dt;
         }
 
@@ -56,8 +54,8 @@ public class Klobject2 extends Klobject {
             double h = Math.pow((semiA - semiB), 2) / Math.pow((semiA + semiB), 2);
             double p = Math.PI * (semiA + semiB) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h)));
 
-            double tt = ((this.t) / p) * 2 * Math.PI; // <-- something fishy maybe going on here mean and eccentric anomaly
-            double q = tt + startAnom;
+            //double tt = ((this.t) / p) * 2 * Math.PI; // <-- something fishy maybe going on here mean and eccentric anomaly
+            double q = 0;//tt + startAnom;
 
             x = (parentBody.getX() + semiA * Math.cos(q) * Math.cos(w) -
             semiB * Math.sin(q) * Math.sin(w) - focus * Math.cos(w));
