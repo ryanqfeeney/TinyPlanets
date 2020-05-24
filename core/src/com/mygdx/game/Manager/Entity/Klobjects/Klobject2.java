@@ -15,7 +15,7 @@ public class Klobject2 extends Klobject {
 
     public Klobject2(Cbody cb,PlayState pstate) {
         super( cb,pstate);
-        klobSprite.rotate(180);
+        sprite.rotate(180);
     }
 
     public Klobject2(PlayState ps, Cbody cb, Point2D pos, Point2D vel) {

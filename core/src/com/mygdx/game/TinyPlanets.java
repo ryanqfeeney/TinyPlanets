@@ -3,10 +3,11 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.mygdx.game.Manager.GameStateManager;
+import com.mygdx.game.Manager.Utility.Assets;
 
 public class TinyPlanets extends ApplicationAdapter {
 
-
+	Assets assets;
 	GameStateManager gsm;
 
 	@Override
@@ -15,7 +16,15 @@ public class TinyPlanets extends ApplicationAdapter {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 
-		gsm = new GameStateManager();
+
+		assets = new Assets();
+
+		assets.load( );
+		assets.manager.finishLoading();
+
+		gsm = new GameStateManager(assets);
+
+
 	}
 
 
@@ -35,6 +44,7 @@ public class TinyPlanets extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		gsm.dispose();
+		assets.dispose();
 	}
 
 

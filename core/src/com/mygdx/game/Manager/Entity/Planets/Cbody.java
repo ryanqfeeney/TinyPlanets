@@ -1,7 +1,9 @@
 package com.mygdx.game.Manager.Entity.Planets;
-
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject2;
@@ -16,8 +18,8 @@ public class Cbody{
 
     protected int sp = 1;
 
+
     protected String name;
-    protected TextureAtlas textureAtlas;
     protected Sprite sprite;
     protected Cbody parentBody;
     protected State state;
@@ -30,7 +32,7 @@ public class Cbody{
 
     protected boolean ccw;
 
-    protected double semiA, semiB, peri, ecc, w, Eanom, Manom, Tanom, startAnom;
+    protected double semiA, semiB, peri, ecc, w, Eanom, Manom, Tanom, startAnom, tmax;
     protected Point2D eccVecc;
 
     protected double s;
@@ -38,25 +40,51 @@ public class Cbody{
     protected double radius;
     protected double mass;
     protected double rotateRate;
+    protected double rotation;
 
     protected double focus;
     protected double soir;
 
     protected PlayState ps;
     protected ShapeRenderer path;
+    protected ShapeRenderer onPathShape;
+    public float scale, circleSize, fStart, fEnd;
+    protected int[] cirCol;
 
 
     public Cbody(PlayState ps){
         children = new  ArrayList<>();
         klobs = new  ArrayList<>();
         klobs2 = new  ArrayList<>();
+        circleSize = 6f;
         MULTIPLIER = 1;
-        rotateRate = .0166;
+        rotateRate = 0;
         w = 0;
         soir = 0; //sphere of influence radiance
         path = new ShapeRenderer();
+        onPathShape = new ShapeRenderer();
+        cirCol = new int[]{255,0,0};
+        path.setProjectionMatrix(ps.getCamera().combined);
         state = new State();
         this.ps = ps;
+    }
+
+    public void afterCall(){
+        scale = ps.getScale();
+        focus = findFocus(semiA, semiB);
+        sprite.setSize((float)radius / (float)ps.getScale(),(float)radius/(float)ps.getScale());
+        sprite.setSize((float)radius / (float)ps.getScale(),(float)radius/(float)ps.getScale());
+        sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
+
+        Double rote = w;
+        state.pos = new Point2D(parentBody.getX() + Math.cos(rote)*semiB,
+                parentBody.getY() + Math.sin(rote)*semiB);
+
+        double vel = calculateVelocity()*sp; // positive goes ccw similar to angles // K
+        state.vel = new Point2D(-Math.sin(rote)*vel,
+                Math.cos(rote)*vel);
+
+        bake();
     }
 
     public Cbody(Cbody parentBody,PlayState ps){
@@ -71,12 +99,17 @@ public class Cbody{
 
 
     public void rotate(float dt){
-        sprite.rotate((float)((rotateRate*dt*MULTIPLIER)%360));
+        if (rotateRate!=0) {
+            sprite.rotate((float) ((rotateRate * dt * MULTIPLIER) % 360));
+        }
+        rotation = (Math.toRadians(sprite.getRotation())+(Math.PI/2))%(2*Math.PI);
     }
 
 
-    double velo, x, y, dSd0, q, rr, dx, dy, vdx, vdy;
+    double velo, x, y, dSd0, q, rr, dx, dy, normMid, velAngle, phi;
     public void moveOnOrbit(double dt){
+
+
 
         velo = state.vel.distance(0, 0);
 
@@ -111,11 +144,98 @@ public class Cbody{
 
         updateChildren(dx,dy);
 
+        calcAnomalies();
+
+        setStateVel();
 
 
 
 
     }
+
+    public float[] getVerts(int size){
+
+
+
+        float [] verts = new float[2*size];
+        double rr;
+        double q = startAnom;
+        double dq;
+
+        if (ecc < 1){
+            dq = 2*Math.PI/size;
+            if(!ccw){
+                dq=-dq;
+            }
+        }
+        else {
+            dq = distance(tmax,startAnom)/size;
+        }
+
+        verts[0] = (float) (getX() -ps.getCamX())/scale;
+        verts[1] = (float) (getY() -ps.getCamY())/scale;
+
+        for (int i = 1; i < size; i++){
+            rr = (semiA*(1-(ecc*ecc))) / (1 + (ecc * Math.cos(q)));
+            if (rr > parentBody.getSoir()) {
+                float[] copyVerts = new float[i*2];
+                System.arraycopy(verts,0,copyVerts,0,i*2);
+                if (i < 3){
+                    copyVerts = new float[]{verts[0], verts[1], verts[0], verts[1]+1};
+                }
+                return copyVerts;
+            }
+            if (i == size - 1 && ecc < 1){
+                verts[2*i]   = (float) (getX() -ps.getCamX())/scale;
+                verts[2*i+1] = (float) (getY() -ps.getCamY())/scale;
+            }
+            else{
+                double x = (parentBody.getX() + rr*Math.cos(q + w));
+                double y = (parentBody.getY() + rr*Math.sin(q + w));
+                if(parentBody.getLoc().distance(new Point2D(x,y)) < parentBody.getRadius()/2) {
+                    float[] copyVerts = new float[i * 2];
+                    System.arraycopy(verts, 0, copyVerts, 0, i * 2);
+                    if (i < 3) {
+                        copyVerts = new float[]{verts[0], verts[1], verts[0], verts[1] + 1};
+                    }
+                    return copyVerts;
+                }
+
+
+                verts[2*i]   = (float) (x-ps.getCamX())/scale;
+                verts[2*i+1] = (float) (y-ps.getCamY())/scale;
+            }
+
+            q+=dq;
+
+        }
+        return verts;
+
+
+    }
+
+    public double distance(double a, double b) {
+        double d = Math.abs(a - b) % (2*Math.PI);
+        double r = d > (Math.PI) ? (2*Math.PI) - d : d;
+
+        //calculate sign
+        int sign = (a - b >= 0 && a - b <= (Math.PI)) || (a - b <=-(Math.PI) && a- b>= -(2*Math.PI)) ? 1 : -1;
+        r *= sign;
+
+        while (r < 0 && ccw){
+            r += (Math.PI*2);
+        }
+        while (r > 0 && !ccw){
+            r -= (Math.PI*2);
+        }
+        if(!ccw){
+
+
+        }
+
+        return r;
+    }
+
 
     public double findFocus(double a, double b){
         return Math.sqrt(a*a - b*b);
@@ -127,14 +247,14 @@ public class Cbody{
         double dist = getLoc().distance(parentBody.getLoc());
         if (Double.isNaN(dist)){
             System.out.println("BREAK BECAUSE NAN ON CALC VELOCITY "+getName());
-            System.exit(0);
+            //System.exit(0);
         }
         double vel = Math.sqrt(gravConstant*parentBody.mass*((2/dist)-(1/semiA)));
         if (Double.isNaN(vel)){
             vel = Math.sqrt(gravConstant*parentBody.mass*(Math.abs((2/dist)-(2/dist))));
             if(Double.isNaN(vel)) {
                 System.out.println("BREAK BECAUSE NAN ON CALC VELOCITY 2 "+getName());
-                System.exit(0);
+                //System.exit(0);
             }
         }
         if(vel==0){
@@ -143,6 +263,37 @@ public class Cbody{
         return vel;
 
     }
+
+    public void setStateVel(){
+
+
+        velo = calculateVelocity() * sp;
+        if (ecc < 1) {
+            state.vel =
+                    new Point2D(-semiA * Math.sin(Eanom) * Math.cos(w) - semiB * Math.cos(Eanom) * Math.sin(w),
+                            semiB * Math.cos(Eanom) * Math.cos(w) - semiA * Math.sin(Eanom) * Math.sin(w));
+
+            normMid = state.vel.distance(0, 0);
+            state.vel = state.vel.scale(velo / normMid);
+
+
+            if (!ccw) {
+                state.vel = new Point2D(-state.vel.x(), -state.vel.y());
+            }
+
+        } else if (ecc > 1) {;
+            phi = Math.atan2(ecc * Math.sin(Tanom), (1 + ecc * Math.cos(Tanom)));
+            if (ccw)
+                velAngle = Tanom + Math.PI / 2 - phi + w;
+            else {
+                velAngle = Tanom - Math.PI / 2 - phi + w;
+            }
+            state.vel = new Point2D(Math.cos(velAngle) * velo, Math.sin(velAngle) * velo);
+
+        }
+    }
+
+
     double velSq, r, gm, cz;
     public void bake() {
         s = 0;
@@ -211,24 +362,15 @@ public class Cbody{
     Point2D rrr;
     public void calcAnomalies() {
 
-
         rrr = new Point2D(state.pos.x() - parentBody.getX(),
                 state.pos.y() - parentBody.getY());
 
-//        if(startAnom == 0) {
-//            Tanom = Math.acos(dotProd(eccVecc, r) / (ecc * r.distance(0, 0)));
-//            if (ecc == 0) {
-//                Tanom = Math.atan2(getX() - parentBody.getX(), getY() - parentBody.getY());
-//            }
-//        }
 
         Tanom = Math.acos(dotProd(eccVecc, rrr) / (ecc * rrr.distance(0, 0)));
         if (ecc == 0) {
             Tanom = Math.atan2(rrr.getY(),rrr.getX());
         }
-//        else {
-//            Tanom = startAnom;
-//        }
+
 
         if(!ccw){
             if (dotProd(eccVecc.rotate(-Math.PI/2),rrr) < 0){
@@ -256,24 +398,69 @@ public class Cbody{
 
         Manom = Eanom - (ecc * Math.sin(Eanom));
 
-    }
-    public void drawPath() {
+        if (ecc > 1){
 
-        path = new ShapeRenderer();
-        path.setProjectionMatrix(ps.getCamera().combined);
-        path.begin(ShapeRenderer.ShapeType.Line);
-        path.translate((float) (((getParentBody().getLoc().getX()) - (semiA) - (Math.cos(w) * (semiA - peri))) - ps.getCamX()),
-                (float) (((getParentBody().getLoc().getY()) - (semiB) - (Math.sin(w) * (semiA - peri))) - ps.getCamY()), 0);
+            if (ccw) {
+                tmax =  (Math.acos(1 / ((-ecc))) );
+            }
+            else{
+                tmax = -(Math.acos(1 / ((-ecc))));
+            }
 
-        try {
-            path.ellipse(0, 0, (float) (2 * semiA), (float) (2 * semiB), (float) Math.toDegrees(getW()));
-        } catch (ArrayIndexOutOfBoundsException e) {
-           // e.printStackTrace();
         }
 
-        path.setColor(255f, 0f, 0, 255f);
-        path.end();
+    }
+    float resetX, resetY, nextX, nextY;
 
+    public void drawPath() {
+
+        double fadeStart = fStart;
+        double fadeEnd =   fEnd;
+        double fade = ps.getScale()-fadeStart;
+        if (fade < 0){
+            return;
+        }
+
+        fade = (fade / fadeEnd);
+        System.out.println(fade);
+        if (fade > 1){
+            fade = 1;
+        }
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        path.setProjectionMatrix(ps.getCamera().combined);
+        path.begin(ShapeRenderer.ShapeType.Line);
+        path.setColor(255f/255, 255f/255, 255f/255, (float)fade );
+
+        try {
+            float[] verts = getVerts(2500); //May not return the same size array if a point exits the soir
+            path.polyline(verts);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // e.printStackTrace();
+        }
+
+        path.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+
+    }
+
+    public void drawCircle(){
+        onPathShape.setProjectionMatrix(ps.getCamera().combined);
+        onPathShape.begin(ShapeRenderer.ShapeType.Filled);
+        try{
+            onPathShape.circle((float)((getX()-ps.getCamX())/scale),(float)((getY()-ps.getCamY())/scale),circleSize);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+        onPathShape.setColor(cirCol[0]/256f, cirCol[1]/256f, cirCol[2]/256f, 1f);
+        onPathShape.end();
+    }
+
+    public void dispose(){
+        path.dispose();
     }
 
 
@@ -283,9 +470,46 @@ public class Cbody{
     public double getY(){
         return getLoc().getY();
     }
+    public double getRotation() {return rotation;}
+
+    public double getRR(){return rotateRate;}
+
+    public void setRR(double rr){ rotateRate = rr;}
+
+    public ShapeRenderer getPath() {
+        return path;
+    }
+
+    public void setPath(ShapeRenderer path) {
+        this.path = path;
+    }
 
     public double getRadius() {
         return radius;
+    }
+
+    public double getSemiA() {
+        return semiA;
+    }
+
+    public void setSemiA(double semiA) {
+        this.semiA = semiA;
+    }
+
+    public double getSemiB() {
+        return semiB;
+    }
+
+    public void setSemiB(double semiB) {
+        this.semiB = semiB;
+    }
+
+    public double getPeri() {
+        return peri;
+    }
+
+    public void setPeri(double peri) {
+        this.peri = peri;
     }
 
     public String getName(){
@@ -305,6 +529,9 @@ public class Cbody{
     public Point2D getLoc(){
         return state.pos;
     }
+    public Point2D getVel(){
+        return state.vel;
+    }
     public void setLoc(Point2D newLoc) { state.pos = newLoc;}
 
     public double getMass(){
@@ -322,6 +549,16 @@ public class Cbody{
     public double getW(){
         return w;
     }
+
+    public float getCirlceSize() {
+        return circleSize;
+    }
+    public void setCirlceSize(float in){
+        circleSize = in;
+    }
+
+
+
 
     public ArrayList<Cbody> getChildren(){
         return children;
