@@ -27,7 +27,7 @@ public class PlayStateHud implements Disposable{
     int mult = 1;
     float compassScale = .2f;
     //Scene2D Widgets
-    private Label multNumberLabel, multLabel, timeLabel, actualTime;
+    private Label multNumberLabel, multLabel, timeLabel, actualTime, velLabel, actualVel;
     Sprite compass;
     ShapeRenderer compassBackground;
 
@@ -50,6 +50,8 @@ public class PlayStateHud implements Disposable{
         timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         actualTime = new Label(String.format("%06d", 20), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
+        velLabel = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        actualVel = new Label(String.format("%06d", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
 
         //define a table used to organize hud's labels

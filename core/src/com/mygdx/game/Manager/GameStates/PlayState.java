@@ -2,10 +2,8 @@ package com.mygdx.game.Manager.GameStates;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
@@ -16,12 +14,11 @@ import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
 
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class PlayState extends GameState {
 
     double camX, camY, camRote;
-    float scale =1000f;
+    float scale = 12000f;
 
 
     SpriteBatch batch;
@@ -43,7 +40,6 @@ public class PlayState extends GameState {
 
         camera.zoom = 1f;
         batch = new SpriteBatch();
-
 
         int c = (int)(Math.sqrt(Math.pow(width,2)+Math.pow(height,2))+1);
 
@@ -67,13 +63,14 @@ public class PlayState extends GameState {
         planets = new ArrayList<>();
         klobjects = new ArrayList<>();
 
-        planets.add(new Sun(this));                   //0
+        planets.add(new Sun(this));                   //011
         planets.add(new Kerbin(planets.get(0),this)); //1
         planets.add(new Mun(planets.get(1),this));    //2
         planets.add(new Minmus(planets.get(1),this)); //3
-        planets.add(new Nars(planets.get(0),this));
+        planets.add(new Nars(planets.get(0),this));   //4
 
-        klobjects.add(new Klobject( planets.get(1),this, 193,  5000000.0, -600));
+       // klobjects.add(new Klobject( planets.get(4),this, Cbody.testROT,  1000000.0, -1140 ));
+        klobjects.add(new Klobject( planets.get(4),this, 547%360,  1000000.0, 1 ));
         hud = new PlayStateHud(this,batch);
 
     }
@@ -99,8 +96,6 @@ public class PlayState extends GameState {
         batch.begin();
         backgroundSprite.draw(batch);
         batch.end();
-
-        //batch.setProjectionMatrix(orbitalHud.getCamera().combined);
 
 
         for (int i = planets.size()-1; i >= 0; i--){
@@ -131,8 +126,6 @@ public class PlayState extends GameState {
         batch.end();
 
         hud.draw(batch);
-        System.out.println(scale);
-
     }
 
 

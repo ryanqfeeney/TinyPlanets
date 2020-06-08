@@ -24,7 +24,8 @@ public class Minmus extends Cbody {
         semiA = 47_000_000.0;
         semiB = 47_000_000.0;
         soir = 2_247_428.4;
-        w = 45;
+        w = Math.PI / 4.0;
+        startAnom = 0;
         cirCol = new int[]{119,130,118};
         fStart = 3000;
         fEnd   = 10000;

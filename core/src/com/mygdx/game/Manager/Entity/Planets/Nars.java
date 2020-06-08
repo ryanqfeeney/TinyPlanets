@@ -19,12 +19,12 @@ public class Nars extends Cbody{
         mass = 4.51 * Math.pow(10, 21);
         semiA = 20_726_155_264.0;
         semiB = semiA * Math.sqrt(1-Math.pow(.051,2));
-        System.out.println(Math.sqrt(1-Math.pow(.051,2)));
         w = 0;
+        startAnom = Math.toRadians(Cbody.testROT);
         soir = 47_921_949.0;
         cirCol = new int[]{173, 74, 11};
-        fStart = 200000;
-        fEnd =   2000000;
+        fStart = 15000;
+        fEnd =   200000;
         afterCall();
     }
 

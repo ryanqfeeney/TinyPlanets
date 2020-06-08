@@ -59,8 +59,6 @@ public class PlayStateInputUtil implements InputProcessor {
             cb.getSprite().setOrigin(cb.getSprite().getWidth() / 2, cb.getSprite().getHeight() / 2);
             cb.scale = ps.getScale();
         }
-
-
         return false;
     }
 
@@ -85,7 +83,6 @@ public class PlayStateInputUtil implements InputProcessor {
 
         ps.setCamX((x+camLX));
         ps.setCamY((y+camLY));
-
         //camera.update();
     }
     public void lookAtCbody(Cbody cb){
@@ -107,8 +104,6 @@ public class PlayStateInputUtil implements InputProcessor {
                 velN = vel.plus(new Point2D(Math.cos(rote), Math.sin(rote)));
                 ps.getKlobjects().get(0).setVel(velN);
             }
-
-
         }
         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ) {
             if(mult == 1) {
@@ -126,20 +121,28 @@ public class PlayStateInputUtil implements InputProcessor {
 
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.Q) ) {
+        if (Gdx.input.isKeyPressed(Input.Keys.Q) || Gdx.input.isKeyPressed(Input.Keys.E) ) {
             if(mult == 1) {
                 Klobject klob = ps.getKlobjects().get(0);
-                klob.setRR(klob.getRR() + klob.getDRR());
+                float rr = 0;//SAS THING GARBAGE TEMP CODE
+                if(Gdx.input.isKeyPressed(Input.Keys.Q)){
+                    klob.setRR(klob.getRR() + klob.getDRR());
+                    rr+=klob.getSasDrr();//SAS THING GARBAGE TEMP CODE
+                }
+                else if(Gdx.input.isKeyPressed(Input.Keys.E)){
+                    klob.setRR(klob.getRR() + klob.getDRR());
+                    rr-=klob.getSasDrr();//SAS THING GARBAGE TEMP CODE
+                }
+                klob.setRR(rr);//SAS THING GARBAGE TEMP CODE
             }
 
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.E) ) {
-            if(mult == 1) {
-                Klobject klob = ps.getKlobjects().get(0);
-                klob.setRR(klob.getRR() - klob.getDRR());
-            }
-
+        else{//SAS THING GARBAGE TEMP CODE
+            Klobject klob = ps.getKlobjects().get(0);
+            klob.setRR(0);
         }
+
+
 //        if (Gdx.input.isKeyPressed(Input.Keys.A) ) {
 //            camera.zoom *= zm;
 //           // mv *=mvScale;

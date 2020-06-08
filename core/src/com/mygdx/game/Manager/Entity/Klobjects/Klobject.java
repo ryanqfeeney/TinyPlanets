@@ -11,6 +11,8 @@ import math.geom2d.Point2D;
 
 public class Klobject extends Cbody {
     float drr = .5f;
+    float sasDrr = 125f;
+
     public Klobject(Cbody cb, PlayState pstate) {
         super(cb,pstate);
 
@@ -18,7 +20,9 @@ public class Klobject extends Cbody {
         mass = 1;
         MULTIPLIER = 1;
         rotateRate = 0;//Math.random()*20 - 10 ;
-        rotation = -90;
+        rotation = 90;
+        fStart = 20;
+        fEnd   = 70;
         parentBody = cb;
         //acceleration = false;
 
@@ -40,8 +44,8 @@ public class Klobject extends Cbody {
 
 
         onPathShape = new ShapeRenderer();
-        fStart = 20;
-        fEnd   = 70;
+        pathKlob = new PathKlob(this);
+
 
         sprite = new Sprite(ps.assets.manager.get(Assets.spaceship));
         sprite.setScale(1f/ps.getScale());
@@ -76,6 +80,10 @@ public class Klobject extends Cbody {
         state.vel = vel;
     }
 
+    public Klobject(){
+        super();
+    }
+
     @Override
     public void drawPath() {
         double fadeStart = fStart;
@@ -86,7 +94,7 @@ public class Klobject extends Cbody {
         }
 
         fade = (fade / fadeEnd);
-        System.out.println(fade);
+       // System.out.println(fade);
         if (fade > 1){
             fade = 1;
         }
@@ -95,21 +103,31 @@ public class Klobject extends Cbody {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         path.setProjectionMatrix(ps.getCamera().combined);
         path.begin(ShapeRenderer.ShapeType.Line);
+        escapePath = false;
         try {
             int vertsSize = 2500;
-            float[] verts = getVerts(vertsSize); //May not return the same size array if a point exits the soir
-            if (verts.length != 2*vertsSize){    //If the length of getVerts return is less than the input paramater, the orbit is cut short. Either by collision or soir escape.
+            float[] verts = getVerts(vertsSize,0); //May not return the same size array if a point exits the soir
+            if (ecc > 1 || (!escapePath && peri < parentBody.getRadius()/2)){
                 path.setColor(255f, 0f, 0f, (float)fade);
+            }
+            else if (escapePath){
+                path.setColor(255f / 256f, 170f / 256f, 3f / 256f, (float) fade);
             }
             else{
                 path.setColor(0f, 255f, 0f, (float)fade);
             }
+
             path.polyline(verts);
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
         path.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
+        if(escapePath){
+            if (pathKlob != null ) {
+                pathKlob.drawPath();
+            }
+        }
     }
 
     @Override
@@ -118,18 +136,18 @@ public class Klobject extends Cbody {
         if (MULTIPLIER == 1) {
             try {
                 oneXupdate(dt);
+                move(dt);
                 bake();
             } catch (Exception e) {
-                System.out.println("BAKE FAILED");
                 System.out.println(e);
             }
         } else {
             moveOnOrbit(dt);
         }
-
         checkSoir();
         rotate(dt);
-        ///System.out.println(state.pos.minus(new Point2D(ps.getCamX(),ps.getCamY()))  + " "+ sprite.getX() + " " +sprite.getY());
+        fixStartAnom();
+
 
     }
 
@@ -137,15 +155,18 @@ public class Klobject extends Cbody {
     public void checkSoir(){
         if (getLoc().distance(parentBody.getLoc()) > parentBody.getSoir()) {
             state.vel = state.vel.plus(parentBody.getVel());
+            parentBody.getKlobs().remove(this);
             parentBody = parentBody.getParentBody();
+            parentBody.addKlob(this);
             bake();
         }
         else {
             for (Cbody child : parentBody.getChildren()) {
-                if (child.equals(this)) { }
-                else if (getLoc().distance(child.getLoc()) < child.getSoir()) {
+                if (getLoc().distance(child.getLoc()) < child.getSoir()) {
                     state.vel = state.vel.minus(child.getVel());
+                    parentBody.getKlobs().remove(this);
                     parentBody = child;
+                    parentBody.addKlob(this);
                     bake();
                     break;
                 }
@@ -160,9 +181,7 @@ public class Klobject extends Cbody {
         }
     }
 
-
-
-    double velo, x, y, dSd0, q, rr, normMid, phi, velAngle;
+    double velo, x, y, dSd0, q, rr, normMid, phi;
 
     @Override
     public void moveOnOrbit(double dt) {
@@ -212,6 +231,8 @@ public class Klobject extends Cbody {
     }
 
     public double getDRR() {return drr;}
+
+    public float getSasDrr () { return sasDrr;}
 
     public void setLoc(Point2D newLoc) {
         state.pos = newLoc;

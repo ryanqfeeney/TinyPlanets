@@ -24,6 +24,7 @@ public class Kerbin extends Cbody{
         semiA = 13_600_000_000.0;
         semiB = 13_600_000_000.0;
         w = 0;
+        startAnom = Math.toRadians(150);
         soir = 84_159_286.0;
         cirCol = new int[]{0,30,255};
         fStart = 200000;
