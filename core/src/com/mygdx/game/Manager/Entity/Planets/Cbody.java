@@ -8,15 +8,17 @@ import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject2;
 import com.mygdx.game.Manager.Entity.Klobjects.PathKlob;
 import com.mygdx.game.Manager.GameStates.PlayState;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
 import org.apache.commons.math3.analysis.function.Sinh;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+
 public class Cbody{
+
 
     protected int sp = 1;
     public static double testROT = 67.6+150;
@@ -55,6 +57,8 @@ public class Cbody{
     protected int[] cirCol;
 
 
+
+
     public Cbody(PlayState ps){
         children = new  ArrayList<>();
         klobs = new  ArrayList<>();
@@ -71,7 +75,7 @@ public class Cbody{
         this.ps = ps;
     }
 
-    public void afterCall(){
+    public void afterCall() {
         scale = ps.getScale();
         focus = findFocus(semiA, semiB);
         sprite.setSize((float)radius / (float)ps.getScale(),(float)radius/(float)ps.getScale());

@@ -20,7 +20,7 @@ public class Klobject extends Cbody {
         mass = 1;
         MULTIPLIER = 1;
         rotateRate = 0;//Math.random()*20 - 10 ;
-        rotation = 90;
+        rotation = 0;
         fStart = 20;
         fEnd   = 70;
         parentBody = cb;

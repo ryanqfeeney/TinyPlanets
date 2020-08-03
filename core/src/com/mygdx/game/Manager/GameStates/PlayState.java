@@ -70,7 +70,7 @@ public class PlayState extends GameState {
         planets.add(new Nars(planets.get(0),this));   //4
 
        // klobjects.add(new Klobject( planets.get(4),this, Cbody.testROT,  1000000.0, -1140 ));
-        klobjects.add(new Klobject( planets.get(4),this, 547%360,  1000000.0, 1 ));
+        klobjects.add(new Klobject( planets.get(4),this, 3*Math.PI/2,  5000000.0, 350 ));
         hud = new PlayStateHud(this,batch);
 
     }
@@ -82,6 +82,7 @@ public class PlayState extends GameState {
         camera.update();
         bCamera.update();
         hud.update(dt);
+
         for (Cbody cb : planets){
             cb.update(dt);
         }

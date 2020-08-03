@@ -17,6 +17,8 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
+import math.geom2d.Point2D;
+
 
 public class PlayStateHud implements Disposable{
 
@@ -27,7 +29,8 @@ public class PlayStateHud implements Disposable{
     int mult = 1;
     float compassScale = .2f;
     //Scene2D Widgets
-    private Label multNumberLabel, multLabel, timeLabel, actualTime, velLabel, actualVel;
+    private Label multNumberLabel, multLabel, timeLabel, actualTime,
+            velLabel, velLabelCopy, actualVel, actualVelCopy, altLabel, actualAlt;
     Sprite compass;
     ShapeRenderer compassBackground;
 
@@ -51,7 +54,8 @@ public class PlayStateHud implements Disposable{
         actualTime = new Label(String.format("%06d", 20), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
         velLabel = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        actualVel = new Label(String.format("%06d", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        actualVel = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+
 
 
         //define a table used to organize hud's labels
@@ -62,13 +66,49 @@ public class PlayStateHud implements Disposable{
         //add labels to table, padding the top, and giving them all equal width with expandX
         table.add(multLabel).expandX().padTop(10);
         table.add(timeLabel).expandX().padTop(10);
+        table.add(velLabel ).expandX().padTop(10);
         table.row();
         table.add(multNumberLabel).expandX();
         table.add(actualTime).expandX();
+        table.add(actualVel ).expandX();
 
         stage.addActor(table);
 
-        initDash();
+
+        //compass dash stuff
+        velLabelCopy = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        actualVelCopy = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+
+        altLabel = new Label("ALTITUDE", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+
+
+
+        double alt = ps.getKlobjects().get(0).getLoc().minus(ps.getKlobjects().get(0).getParentBody().getLoc()).distance(0,0);
+        actualAlt = new Label(String.format("%.2f",alt), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+
+        Table compassTable = new Table();
+        compassTable.bottom();
+        compassTable.setFillParent(true);
+
+        int padR = ps.getScreenWidth() - 500;
+        int padB = 50;
+
+
+        compassTable.add(altLabel).padRight(padR);
+        compassTable.row();
+        compassTable.add(actualAlt).padRight(padR).padBottom(20);
+        compassTable.row();
+        compassTable.add(velLabelCopy).padRight(padR);
+        compassTable.row();
+        compassTable.add(actualVelCopy ).padRight(padR).padBottom(padB);
+
+
+
+        stage.addActor(compassTable);
+
+
+
+      initDash();
 
     }
     public void initDash(){
@@ -97,6 +137,15 @@ public class PlayStateHud implements Disposable{
         multNumberLabel.setText(mult + "X");
         actualTime.setText(System.currentTimeMillis()+"");
         compass.setRotation((float) (Math.toDegrees(ps.getKlobjects().get(0).getRotation()-Math.PI/2)+ps.getCamRotation()));
+        double vel = ps.getKlobjects().get(0).getVel().distance(0,0);
+
+        actualVel.setText(String.format("%.2f",vel));
+        actualVelCopy.setText(String.format("%.2f",vel));
+
+        double p = ps.getKlobjects().get(0).getLoc().minus(ps.getKlobjects().get(0).getParentBody().getLoc()).distance(0,0);
+        p = p /1000;
+        actualAlt.setText(String.format("%.2f",p) + "K");
+
     }
 
     @Override
