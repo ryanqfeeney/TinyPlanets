@@ -19,6 +19,8 @@ import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import math.geom2d.Point2D;
 
+import java.util.Date;
+
 
 public class PlayStateHud implements Disposable{
 
@@ -29,7 +31,7 @@ public class PlayStateHud implements Disposable{
     int mult = 1;
     float compassScale = .2f;
     //Scene2D Widgets
-    private Label multNumberLabel, multLabel, timeLabel, actualTime,
+    private Label multNumberLabel, multLabel, timeLabel, useForSomethingBetter,
             velLabel, velLabelCopy, actualVel, actualVelCopy, altLabel, actualAlt;
     Sprite compass;
     ShapeRenderer compassBackground;
@@ -51,7 +53,7 @@ public class PlayStateHud implements Disposable{
         multNumberLabel = new Label(String.format("%06d", mult), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
         timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        actualTime = new Label(String.format("%06d", 20), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        useForSomethingBetter = new Label(String.format("%06d", 20), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
         velLabel = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         actualVel = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
@@ -69,7 +71,7 @@ public class PlayStateHud implements Disposable{
         table.add(velLabel ).expandX().padTop(10);
         table.row();
         table.add(multNumberLabel).expandX();
-        table.add(actualTime).expandX();
+        table.add(useForSomethingBetter).expandX();
         table.add(actualVel ).expandX();
 
         stage.addActor(table);
@@ -135,7 +137,8 @@ public class PlayStateHud implements Disposable{
     }
     public void update(float dt){
         multNumberLabel.setText(mult + "X");
-        actualTime.setText(System.currentTimeMillis()+"");
+        timeLabel.setText(new Date().toString().toUpperCase()+"");
+        //useForSomethingBetter.setText(new Date().toString().toUpperCase()+"");
         compass.setRotation((float) (Math.toDegrees(ps.getKlobjects().get(0).getRotation()-Math.PI/2)+ps.getCamRotation()));
         double vel = ps.getKlobjects().get(0).getVel().distance(0,0);
 
@@ -147,9 +150,11 @@ public class PlayStateHud implements Disposable{
         if (p >= 1000000){
             p = p /1000;
             actualAlt.setText(String.format("%.2f",p) + "K");
+            useForSomethingBetter.setText("ALTITUDE: " + String.format("%.2f",p) + "K");
         }
         else{
             actualAlt.setText(String.format("%.2f",p) + "M");
+            useForSomethingBetter.setText("ALTITUDE: " + String.format("%.2f",p) + "M");
         }
 
 

@@ -13,6 +13,7 @@ import com.mygdx.game.Manager.Entity.Planets.Kerbin.Minmus;
 import com.mygdx.game.Manager.Entity.Planets.Kerbin.Mun;
 import com.mygdx.game.Manager.Entity.Planets.Nars.Codde117;
 import com.mygdx.game.Manager.Entity.Planets.Nars.Nars;
+import com.mygdx.game.Manager.Entity.Planets.Fiji.Fiji;
 import com.mygdx.game.Manager.Utility.Assets;
 import com.mygdx.game.Manager.Utility.Huds.PlayStateHud;
 import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
@@ -68,15 +69,17 @@ public class PlayState extends GameState {
         planets = new ArrayList<>();
         klobjects = new ArrayList<>();
 
-        planets.add(new Sun(this));                        //011
-        planets.add(new Kerbin(planets.get(0),this));       //1
-        planets.add(new Mun(planets.get(1),this));          //2
-        planets.add(new Minmus(planets.get(1),this));       //3
-        planets.add(new Nars(planets.get(0),this));         //4
-        planets.add(new Codde117(planets.get(4),this));     //5
+        planets.add(new Sun(this));                         //0
+
+        planets.add(new Fiji(planets.get(0),this));         //1
+        planets.add(new Kerbin(planets.get(0),this));       //2
+        planets.add(new Mun(planets.get(2),this));          //3
+        planets.add(new Minmus(planets.get(2),this));       //4
+        planets.add(new Nars(planets.get(0),this));         //5
+        planets.add(new Codde117(planets.get(5),this));     //6
 
        // klobjects.add(new Klobject( planets.get(4),this, Cbody.testROT,  1000000.0, -1140 ));
-        klobjects.add(new Klobject( planets.get(1),this, 3*Math.PI/2,  5000000.0, 350 ));
+        klobjects.add(new Klobject( planets.get(1),this, 3*Math.PI/2,  5000000.0, 1000 ));
         hud = new PlayStateHud(this,batch);
 
     }

@@ -27,17 +27,20 @@ public class Assets {
     public static final AssetDescriptor<Texture> sun =
             new AssetDescriptor<Texture>("planets/sun.png", Texture.class);
 
+    public static final AssetDescriptor<Texture> fiji =
+            new AssetDescriptor<Texture>("planets/fiji/fiji.png", Texture.class);
+
     public static final AssetDescriptor<Texture> kerbin =
-        new AssetDescriptor<Texture>("planets/kerbin.png", Texture.class);
+        new AssetDescriptor<Texture>("planets/kerbin/kerbin.png", Texture.class);
 
     public static final AssetDescriptor<Texture> nars =
-            new AssetDescriptor<Texture>("planets/nars.png", Texture.class);
+            new AssetDescriptor<Texture>("planets/nars/nars.png", Texture.class);
 
     public static final AssetDescriptor<Texture> mun =
-        new AssetDescriptor<Texture>("planets/mun.png", Texture.class);
+        new AssetDescriptor<Texture>("planets/kerbin/mun.png", Texture.class);
 
     public static final AssetDescriptor<Texture> minmus =
-        new AssetDescriptor<Texture>("planets/mun.png", Texture.class);
+        new AssetDescriptor<Texture>("planets/kerbin/mun.png", Texture.class);
 
     public static final AssetDescriptor<Texture> spaceship =
         new AssetDescriptor<Texture>("klobjects/spaceship.png", Texture.class);
@@ -82,6 +85,7 @@ public class Assets {
         //manager.load(cBTextureAtlas);
         manager.load(background);
         manager.load(sun);
+        manager.load(fiji);
         manager.load(kerbin);
         manager.load(mun);
         manager.load(minmus);
