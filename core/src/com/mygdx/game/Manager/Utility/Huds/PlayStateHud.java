@@ -143,8 +143,15 @@ public class PlayStateHud implements Disposable{
         actualVelCopy.setText(String.format("%.2f",vel));
 
         double p = ps.getKlobjects().get(0).getLoc().minus(ps.getKlobjects().get(0).getParentBody().getLoc()).distance(0,0);
-        p = p /1000;
-        actualAlt.setText(String.format("%.2f",p) + "K");
+
+        if (p >= 1000000){
+            p = p /1000;
+            actualAlt.setText(String.format("%.2f",p) + "K");
+        }
+        else{
+            actualAlt.setText(String.format("%.2f",p) + "M");
+        }
+
 
     }
 

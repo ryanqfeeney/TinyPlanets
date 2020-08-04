@@ -24,6 +24,7 @@ public class Klobject extends Cbody {
         fStart = 20;
         fEnd   = 70;
         parentBody = cb;
+        circleSize = 6f;
         //acceleration = false;
 
         parentBody.addKlob(this);

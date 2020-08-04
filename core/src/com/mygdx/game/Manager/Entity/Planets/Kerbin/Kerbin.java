@@ -1,17 +1,18 @@
-package com.mygdx.game.Manager.Entity.Planets;
+package com.mygdx.game.Manager.Entity.Planets.Kerbin;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import math.geom2d.Point2D;
 import org.apache.commons.math3.distribution.TDistribution;
 
 
-public class Kerbin extends Cbody{
+public class Kerbin extends Cbody {
     public Kerbin(Cbody pBody, PlayState ps){
         super(ps);
         name = "kerbin";

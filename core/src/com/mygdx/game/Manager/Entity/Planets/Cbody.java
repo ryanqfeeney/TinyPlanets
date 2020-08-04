@@ -62,7 +62,7 @@ public class Cbody{
     public Cbody(PlayState ps){
         children = new  ArrayList<>();
         klobs = new  ArrayList<>();
-        circleSize = 6f;
+        circleSize = 9f;
         MULTIPLIER = 1;
         rotateRate = 0;
         w = 0;
