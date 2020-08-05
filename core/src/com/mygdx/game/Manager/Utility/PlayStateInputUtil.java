@@ -193,7 +193,7 @@ public class PlayStateInputUtil implements InputProcessor {
             camLX = 0;
             camLY = 0;
             if(look == 1){ // change to zero to include sun in rotation
-                look = ps.getPlanets().size()-1;
+                //look = ps.getPlanets().size()-1; comment this if you want back in to rotate to the end on cbodies in rotation
             }
             else if (look < 0){
                 look = 1;
@@ -210,7 +210,12 @@ public class PlayStateInputUtil implements InputProcessor {
             if (look < 0){
                 look = 1;
             }
-            else if (look < (ps.getPlanets().size()-1)){ look=(look + 1)%(ps.getPlanets().size()); } // change to <= to flip back to planet 0
+            else if (look < (ps.getPlanets().size())){
+                if (look == ps.getPlanets().size()-1 ) {look--;} // comment in this line to shuffle through
+                look++;
+                look%=(ps.getPlanets().size()); // flips to zero if reaches the end
+                if (look == 0) { look++; }
+            }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {

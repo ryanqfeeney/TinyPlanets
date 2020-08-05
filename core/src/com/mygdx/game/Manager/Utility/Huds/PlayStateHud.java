@@ -29,10 +29,25 @@ public class PlayStateHud implements Disposable{
     PlayState ps;
 
     int mult = 1;
+
+    int padCompassRight =  -500;
+    int padCompassBotton = 50;
     float compassScale = .2f;
+
+    int padControlLeft =  -220;
+    int padControlBotton = 20;
+
+
+
     //Scene2D Widgets
-    private Label multNumberLabel, multLabel, timeLabel, useForSomethingBetter,
-            velLabel, velLabelCopy, actualVel, actualVelCopy, altLabel, actualAlt;
+    private final Label  multLabel, altLabel, velLabel, velLabelCopy, multNumberLabel, timeLabel,
+            useForSomethingBetter, actualVel, actualVelCopy,  actualAlt;
+
+    //Controls Text
+    private Label control_toggle_cam, control_rotate_cam, control_pan_cam, control_zoom_cam, control_throttle_up,
+            control_throttle_down, control_next_cbody, control_prev_cbody, control_rotate_countcw, control_rotate_cw,
+            control_warp_up, control_warp_down, control_drop_warp, control_jump_to, control_click_to;
+
     Sprite compass;
     ShapeRenderer compassBackground;
 
@@ -41,13 +56,21 @@ public class PlayStateHud implements Disposable{
 
     public PlayStateHud(PlayState ps, SpriteBatch sb) {
 
-
-
         this.ps = ps;
-
         viewport = new ExtendViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),new OrthographicCamera());
         stage = new Stage(viewport,sb );
 
+        padCompassRight += ps.getScreenWidth();
+        padControlLeft +=  ps.getScreenWidth();
+
+
+        //****
+        //Top Label
+        //****
+
+        Table table = new Table();
+        table.top();
+        table.setFillParent(true);
 
         multLabel = new Label("MULTIPLIER", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         multNumberLabel = new Label(String.format("%06d", mult), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
@@ -58,13 +81,6 @@ public class PlayStateHud implements Disposable{
         velLabel = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         actualVel = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
-
-
-        //define a table used to organize hud's labels
-        Table table = new Table();
-        table.top();
-        table.setFillParent(true);
-
         //add labels to table, padding the top, and giving them all equal width with expandX
         table.add(multLabel).expandX().padTop(10);
         table.add(timeLabel).expandX().padTop(10);
@@ -74,8 +90,14 @@ public class PlayStateHud implements Disposable{
         table.add(useForSomethingBetter).expandX();
         table.add(actualVel ).expandX();
 
-        stage.addActor(table);
 
+        //****
+        //Compass Label
+        //****
+
+        Table compassTable = new Table();
+        compassTable.bottom();
+        compassTable.setFillParent(true);
 
         //compass dash stuff
         velLabelCopy = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
@@ -83,34 +105,39 @@ public class PlayStateHud implements Disposable{
 
         altLabel = new Label("ALTITUDE", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
-
-
         double alt = ps.getKlobjects().get(0).getLoc().minus(ps.getKlobjects().get(0).getParentBody().getLoc()).distance(0,0);
         actualAlt = new Label(String.format("%.2f",alt), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
-        Table compassTable = new Table();
-        compassTable.bottom();
-        compassTable.setFillParent(true);
-
-        int padR = ps.getScreenWidth() - 500;
-        int padB = 50;
-
-
-        compassTable.add(altLabel).padRight(padR);
+        compassTable.add(altLabel).padRight(padCompassRight);
         compassTable.row();
-        compassTable.add(actualAlt).padRight(padR).padBottom(20);
+        compassTable.add(actualAlt).padRight(padCompassRight).padBottom(20);
         compassTable.row();
-        compassTable.add(velLabelCopy).padRight(padR);
+        compassTable.add(velLabelCopy).padRight(padCompassRight);
         compassTable.row();
-        compassTable.add(actualVelCopy ).padRight(padR).padBottom(padB);
+        compassTable.add(actualVelCopy ).padRight(padCompassRight).padBottom(padCompassBotton);
 
 
+        //****
+        //Control Label
+        //****
 
+        Table controlTable = new Table();
+        controlTable.bottom();
+        controlTable.setFillParent(true);
+
+        setControlLabels(controlTable);
+
+        stage.addActor(table);
         stage.addActor(compassTable);
+        stage.addActor(controlTable);
 
 
 
-      initDash();
+
+
+
+
+        initDash();
 
     }
     public void initDash(){
@@ -183,6 +210,42 @@ public class PlayStateHud implements Disposable{
         batch.begin();
         compass.draw(batch);
         batch.end();
+    }
+
+    public void setControlLabels(Table controlTable){
+        control_pan_cam        = new Label("Pan Camera: RMB", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_rotate_cam     = new Label("Rotate Camera: Alt + RMB", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_zoom_cam       = new Label("Zoom Camera: Scroll Wheel", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_throttle_up    = new Label("Throttle Up: Shift", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_throttle_down  = new Label("Throttle Down: Ctrl", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_next_cbody     = new Label("Next C-Body:  +", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_prev_cbody     = new Label("Prev C-Cbody: -", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_rotate_countcw = new Label("Rotate CCW: Q", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_rotate_cw      = new Label("Rotate  CW: E", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_warp_up        = new Label("Warp Up: >", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_warp_down      = new Label("Warp Down: <", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_drop_warp      = new Label("Drop out of warp: ?", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_jump_to        = new Label("Jump to player: 1", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_click_to       = new Label("Click any C-Body to Lock", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_toggle_cam     = new Label("Toggle Camera Lock: X", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+
+        controlTable.add(control_rotate_cam).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_pan_cam ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_zoom_cam).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_throttle_up).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_throttle_down ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_next_cbody ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_prev_cbody ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_rotate_countcw ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_rotate_cw ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_warp_up ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_warp_down ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_drop_warp ).expandX().padLeft(padControlLeft).left().left().row();
+        controlTable.add(control_jump_to ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_click_to ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_toggle_cam).expandX().padLeft(padControlLeft).left().row();
+        controlTable.padBottom(padControlBotton);
+
     }
 
 
