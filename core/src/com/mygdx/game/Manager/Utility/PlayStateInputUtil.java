@@ -13,6 +13,9 @@ import math.geom2d.Point2D;
 import math.geom2s.Point2S;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.Executors;
 
 
 public class PlayStateInputUtil implements InputProcessor {
@@ -22,12 +25,14 @@ public class PlayStateInputUtil implements InputProcessor {
     float zm = 1.05f;
     float rotation = 0;
     float rotationRate = .5f;
-    int look = 1;
+    int look = 2;
     float camLX = 0;
     float camLY = 0;
     boolean camLock = true;
     double mult = Math.pow(2,sp);
     double dvScale = 5.0;
+
+
 
     PlayState ps;
     OrthographicCamera camera;
@@ -169,6 +174,10 @@ public class PlayStateInputUtil implements InputProcessor {
 //            camLY+=mv;
 //        }
 
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
+            ps.getHud().toggleControl();
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 
 

@@ -79,7 +79,7 @@ public class PlayState extends GameState {
         planets.add(new Codde117(planets.get(5),this));     //6
 
        // klobjects.add(new Klobject( planets.get(4),this, Cbody.testROT,  1000000.0, -1140 ));
-        klobjects.add(new Klobject( planets.get(1),this, 3*Math.PI/2,  5000000.0, 1000 ));
+        klobjects.add(new Klobject( planets.get(2),this, 3*Math.PI/2,  5000000.0, 1000 ));
         hud = new PlayStateHud(this,batch);
 
     }

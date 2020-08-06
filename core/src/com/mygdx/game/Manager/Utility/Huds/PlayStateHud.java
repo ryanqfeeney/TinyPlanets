@@ -17,7 +17,6 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
-import math.geom2d.Point2D;
 
 import java.util.Date;
 
@@ -30,12 +29,21 @@ public class PlayStateHud implements Disposable{
 
     int mult = 1;
 
+    Table table, compassTable, controlTable;
+
     int padCompassRight =  -500;
     int padCompassBotton = 50;
     float compassScale = .2f;
 
     int padControlLeft =  -220;
+    int origPad =  -220;
+
+    double controlExitStop = 420;
+    double controlExitRate = 8; //keep as an even number
+    boolean controlToggle = true;
+    boolean stop = true;
     int padControlBotton = 20;
+
 
 
 
@@ -46,7 +54,7 @@ public class PlayStateHud implements Disposable{
     //Controls Text
     private Label control_toggle_cam, control_rotate_cam, control_pan_cam, control_zoom_cam, control_throttle_up,
             control_throttle_down, control_next_cbody, control_prev_cbody, control_rotate_countcw, control_rotate_cw,
-            control_warp_up, control_warp_down, control_drop_warp, control_jump_to, control_click_to;
+            control_warp_up, control_warp_down, control_drop_warp, control_jump_to, control_click_to, control_toggle_menu;
 
     Sprite compass;
     ShapeRenderer compassBackground;
@@ -62,13 +70,14 @@ public class PlayStateHud implements Disposable{
 
         padCompassRight += ps.getScreenWidth();
         padControlLeft +=  ps.getScreenWidth();
+        origPad += ps.getScreenWidth();
 
 
         //****
         //Top Label
         //****
 
-        Table table = new Table();
+        table = new Table();
         table.top();
         table.setFillParent(true);
 
@@ -95,7 +104,7 @@ public class PlayStateHud implements Disposable{
         //Compass Label
         //****
 
-        Table compassTable = new Table();
+        compassTable = new Table();
         compassTable.bottom();
         compassTable.setFillParent(true);
 
@@ -121,7 +130,7 @@ public class PlayStateHud implements Disposable{
         //Control Label
         //****
 
-        Table controlTable = new Table();
+        controlTable = new Table();
         controlTable.bottom();
         controlTable.setFillParent(true);
 
@@ -130,11 +139,6 @@ public class PlayStateHud implements Disposable{
         stage.addActor(table);
         stage.addActor(compassTable);
         stage.addActor(controlTable);
-
-
-
-
-
 
 
         initDash();
@@ -169,6 +173,8 @@ public class PlayStateHud implements Disposable{
         compass.setRotation((float) (Math.toDegrees(ps.getKlobjects().get(0).getRotation()-Math.PI/2)+ps.getCamRotation()));
         double vel = ps.getKlobjects().get(0).getVel().distance(0,0);
 
+        moveControl();
+
         actualVel.setText(String.format("%.2f",vel));
         actualVelCopy.setText(String.format("%.2f",vel));
 
@@ -183,6 +189,7 @@ public class PlayStateHud implements Disposable{
             actualAlt.setText(String.format("%.2f",p) + "M");
             useForSomethingBetter.setText("ALTITUDE: " + String.format("%.2f",p) + "M");
         }
+
 
 
     }
@@ -228,6 +235,7 @@ public class PlayStateHud implements Disposable{
         control_jump_to        = new Label("Jump to player: 1", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_click_to       = new Label("Click any C-Body to Lock", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_toggle_cam     = new Label("Toggle Camera Lock: X", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_toggle_menu    = new Label("Toggle Control Menu: M", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
         controlTable.add(control_rotate_cam).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_pan_cam ).expandX().padLeft(padControlLeft).left().row();
@@ -244,7 +252,35 @@ public class PlayStateHud implements Disposable{
         controlTable.add(control_jump_to ).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_click_to ).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_toggle_cam).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_toggle_menu).expandX().padLeft(padControlLeft).left().row();
         controlTable.padBottom(padControlBotton);
+
+    }
+    public void toggleControl(){
+        controlToggle = !controlToggle;
+        System.out.println(controlToggle);
+        stop = false;
+    }
+
+    public void moveControl() {
+        if (!controlToggle && !stop) {
+            if (padControlLeft < (origPad + controlExitStop)) {
+                padControlLeft += controlExitRate;
+                controlTable.moveBy((float) controlExitRate, 0);
+            } else {
+                controlToggle = false;
+                stop = true;
+            }
+        } else if (!stop) {
+            if (padControlLeft >= (origPad)) {
+                padControlLeft -= controlExitRate;
+                controlTable.moveBy(-(float) controlExitRate, 0);
+            } else {
+                controlToggle = true;
+                stop = true;
+            }
+
+        }
 
     }
 
