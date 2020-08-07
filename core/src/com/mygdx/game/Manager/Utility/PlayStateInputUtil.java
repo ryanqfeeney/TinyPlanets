@@ -30,7 +30,6 @@ public class PlayStateInputUtil implements InputProcessor {
     float camLY = 0;
     boolean camLock = true;
     double mult = Math.pow(2,sp);
-    double dvScale = 5.0;
 
 
 
@@ -103,20 +102,17 @@ public class PlayStateInputUtil implements InputProcessor {
     Point2D vel, velN;
     double rote;
     public void handleInput(){
+
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ) {
-            if(mult == 1) {
-                vel = ps.getKlobjects().get(0).getVel();
-                rote = ps.getKlobjects().get(0).getRotation();
-                velN = vel.plus(new Point2D(Math.cos(rote), Math.sin(rote)).scale(dvScale));
-                ps.getKlobjects().get(0).setVel(velN);
+            Klobject klob =  ps.getKlobjects().get(0);
+            if(mult == 1 && klob.getThrottle() < klob.getMaxThrottle()) {
+                klob.setThrottle(klob.getThrottle()+klob.getdThrottle());
             }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ) {
-            if(mult == 1) {
-                vel = ps.getKlobjects().get(0).getVel();
-                rote = ps.getKlobjects().get(0).getRotation();
-                velN = vel.plus(new Point2D(-Math.cos(rote), -Math.sin(rote)).scale(dvScale));
-                ps.getKlobjects().get(0).setVel(velN);
+            Klobject klob =  ps.getKlobjects().get(0);
+            if(mult == 1 && klob.getThrottle() > 0) {
+                klob.setThrottle(klob.getThrottle()-klob.getdThrottle());
             }
 
         }
@@ -174,7 +170,10 @@ public class PlayStateInputUtil implements InputProcessor {
 //            camLY+=mv;
 //        }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+            ps.getKlobjects().get(0).setThrottle(0);
 
+        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
             ps.getHud().toggleControl();
         }
@@ -192,7 +191,7 @@ public class PlayStateInputUtil implements InputProcessor {
             rotation += rotationRate;
             ps.setCamRote(rotation); //Check for setCamRote. It has a negative there
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
             camLock = !camLock;
             camLX = camLY = 0f;
 

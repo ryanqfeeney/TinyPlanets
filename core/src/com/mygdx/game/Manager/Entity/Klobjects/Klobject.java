@@ -12,6 +12,9 @@ import math.geom2d.Point2D;
 public class Klobject extends Cbody {
     float drr = .5f;
     float sasDrr = 125f;
+    double throttle = 0;
+    double maxThrottle = 10;
+    double dThr = 8 / 1000.0; // smaller for slower movement speed
 
     public Klobject(Cbody cb, PlayState pstate) {
         super(cb,pstate);
@@ -25,7 +28,6 @@ public class Klobject extends Cbody {
         fEnd   = 70;
         parentBody = cb;
         circleSize = 6f;
-        //acceleration = false;
 
         parentBody.addKlob(this);
 
@@ -177,6 +179,9 @@ public class Klobject extends Cbody {
 
     int timesLooped = 100 ;
     private void oneXupdate(float dt) {
+        Point2D velN = getVel().plus(new Point2D(Math.cos(getRotation()), Math.sin(getRotation()))
+                .scale(getThrottle()));
+        setVel(velN);
         for (int i = 0; i < timesLooped; i++) {
             integrate(state, dt / timesLooped);
         }
@@ -187,7 +192,7 @@ public class Klobject extends Cbody {
     @Override
     public void moveOnOrbit(double dt) {
         super.moveOnOrbit(dt);
-        //setStateVel();
+        setThrottle(0);
     }
 
 
@@ -249,6 +254,30 @@ public class Klobject extends Cbody {
 
     public Point2D getVel() {
         return state.vel;
+    }
+
+    public double getThrottle() {
+        return throttle;
+    }
+
+    public void setThrottle(double throttle){
+        this.throttle =throttle;
+    }
+
+    public double getMaxThrottle() {
+        return maxThrottle;
+    }
+
+    public void setMaxThrottle(double maxAcceleration){
+        this.maxThrottle =maxAcceleration;
+    }
+
+    public double getdThrottle() {
+        return dThr;
+    }
+
+    public void setdThr(double dThr){
+        this.dThr =dThr;
     }
 
     public void setVel(Point2D in) {

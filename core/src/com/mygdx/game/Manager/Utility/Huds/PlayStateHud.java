@@ -52,7 +52,7 @@ public class PlayStateHud implements Disposable{
             useForSomethingBetter, actualVel, actualVelCopy,  actualAlt;
 
     //Controls Text
-    private Label control_toggle_cam, control_rotate_cam, control_pan_cam, control_zoom_cam, control_throttle_up,
+    private Label control_toggle_cam, control_rotate_cam, control_pan_cam, control_zoom_cam, control_throttle_up, control_cut_engines,
             control_throttle_down, control_next_cbody, control_prev_cbody, control_rotate_countcw, control_rotate_cw,
             control_warp_up, control_warp_down, control_drop_warp, control_jump_to, control_click_to, control_toggle_menu;
 
@@ -81,7 +81,7 @@ public class PlayStateHud implements Disposable{
         table.top();
         table.setFillParent(true);
 
-        multLabel = new Label("MULTIPLIER", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        multLabel = new Label("WARP", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         multNumberLabel = new Label(String.format("%06d", mult), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
         timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
@@ -190,8 +190,6 @@ public class PlayStateHud implements Disposable{
             useForSomethingBetter.setText("ALTITUDE: " + String.format("%.2f",p) + "M");
         }
 
-
-
     }
 
     @Override
@@ -225,33 +223,35 @@ public class PlayStateHud implements Disposable{
         control_zoom_cam       = new Label("Zoom Camera: Scroll Wheel", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_throttle_up    = new Label("Throttle Up: Shift", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_throttle_down  = new Label("Throttle Down: Ctrl", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_cut_engines    = new Label("Cut Engines: X", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_next_cbody     = new Label("Next C-Body:  +", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_prev_cbody     = new Label("Prev C-Cbody: -", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_rotate_countcw = new Label("Rotate CCW: Q", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_rotate_cw      = new Label("Rotate  CW: E", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_warp_up        = new Label("Warp Up: >", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_warp_down      = new Label("Warp Down: <", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_drop_warp      = new Label("Drop out of warp: ?", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_jump_to        = new Label("Jump to player: 1", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_drop_warp      = new Label("Drop Out of Warp: /", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_jump_to        = new Label("Jump to Player: 1", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_click_to       = new Label("Click any C-Body to Lock", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_toggle_cam     = new Label("Toggle Camera Lock: X", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_toggle_cam     = new Label("Toggle Camera Lock: C", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_toggle_menu    = new Label("Toggle Control Menu: M", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
-        controlTable.add(control_rotate_cam).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_pan_cam ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_rotate_cam).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_zoom_cam).expandX().padLeft(padControlLeft).left().row();
-        controlTable.add(control_throttle_up).expandX().padLeft(padControlLeft).left().row();
-        controlTable.add(control_throttle_down ).expandX().padLeft(padControlLeft).left().row();
-        controlTable.add(control_next_cbody ).expandX().padLeft(padControlLeft).left().row();
-        controlTable.add(control_prev_cbody ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_toggle_cam).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_rotate_countcw ).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_rotate_cw ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_throttle_up).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_throttle_down ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_cut_engines ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_next_cbody ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_prev_cbody ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_jump_to ).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_warp_up ).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_warp_down ).expandX().padLeft(padControlLeft).left().row();
-        controlTable.add(control_drop_warp ).expandX().padLeft(padControlLeft).left().left().row();
-        controlTable.add(control_jump_to ).expandX().padLeft(padControlLeft).left().row();
+        controlTable.add(control_drop_warp ).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_click_to ).expandX().padLeft(padControlLeft).left().row();
-        controlTable.add(control_toggle_cam).expandX().padLeft(padControlLeft).left().row();
         controlTable.add(control_toggle_menu).expandX().padLeft(padControlLeft).left().row();
         controlTable.padBottom(padControlBotton);
 
