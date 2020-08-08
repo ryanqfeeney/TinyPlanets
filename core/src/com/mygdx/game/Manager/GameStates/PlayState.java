@@ -20,6 +20,7 @@ import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
 
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PlayState extends GameState {
 
@@ -79,7 +80,18 @@ public class PlayState extends GameState {
         planets.add(new Codde117(planets.get(5),this));     //6
 
        // klobjects.add(new Klobject( planets.get(4),this, Cbody.testROT,  1000000.0, -1140 ));
-        klobjects.add(new Klobject( planets.get(2),this, 3*Math.PI/2,  5000000.0, 547 ));
+        Random random1 = new Random();
+        Random random2 = new Random();
+        Random random3 = new Random();
+
+        klobjects.add(new Klobject( planets.get(2),this, (Math.random() * 360),
+                5000000.0 + (Math.random() * 2000000.0) - 1000000.0, (random1.nextBoolean() ? 1 : -1)*(700 + (Math.random() * 120) -60 )));
+        klobjects.add(new Klobject( planets.get(2),this, (Math.random() * 360),
+                20000000.0 + (Math.random() * 4000000.0) - 1000000.0, (random2.nextBoolean() ? 1 : -1)*(400 + (Math.random() * 80) -40 )));
+        klobjects.add(new Klobject( planets.get(2),this, (Math.random() * 360),
+                70000000.0 + (Math.random() * 10000000.0) - 1000000.0, (random3.nextBoolean() ? 1 : -1)*(200 + (Math.random() * 16) -8 )));
+
+
         hud = new PlayStateHud(this,batch);
 
     }

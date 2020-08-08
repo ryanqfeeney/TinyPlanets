@@ -11,10 +11,15 @@ import math.geom2d.Point2D;
 
 public class Klobject extends Cbody {
     float drr = .5f;
-    float sasDrr = 125f;
+
+    double dThr = 25 / 1000.0; // smaller for slower movement speed
     double throttle = 0;
-    double maxThrottle = 10;
-    double dThr = 8 / 1000.0; // smaller for slower movement speed
+    double maxThrottle = 1;
+
+    double deltaV = 0;
+
+
+
 
     public Klobject(Cbody cb, PlayState pstate) {
         super(cb,pstate);
@@ -23,7 +28,7 @@ public class Klobject extends Cbody {
         mass = 1;
         MULTIPLIER = 1;
         rotateRate = 0;//Math.random()*20 - 10 ;
-        rotation = 0;
+        rotation = Math.random() * 360;
         fStart = 20;
         fEnd   = 70;
         parentBody = cb;
@@ -33,7 +38,7 @@ public class Klobject extends Cbody {
 
         state = new State();
 
-        Double rote = Math.toRadians(3.0/2*Math.PI);
+        Double rote = Math.toRadians(0);
         double dist = 900_000;
         double vel = 2500.0 * sp; // positive goes ccw similar to angles // K
 
@@ -135,7 +140,6 @@ public class Klobject extends Cbody {
 
     @Override
     public void update(float dt) {
-
         if (MULTIPLIER == 1) {
             try {
                 oneXupdate(dt);
@@ -179,9 +183,14 @@ public class Klobject extends Cbody {
 
     int timesLooped = 100 ;
     private void oneXupdate(float dt) {
-        Point2D velN = getVel().plus(new Point2D(Math.cos(getRotation()), Math.sin(getRotation()))
-                .scale(getThrottle()));
+//        Point2D velN = getVel().plus(new Point2D(Math.cos(getRotation()), Math.sin(getRotation()))
+//                .scale(getThrottle()));
+
+        Point2D dV = new Point2D(Math.cos(getRotation()), Math.sin(getRotation())).scale(getThrottle());
+        Point2D velN = getVel().plus(dV);
+        setDeltaV(getDeltaV()+dV.distance(0,0));
         setVel(velN);
+
         for (int i = 0; i < timesLooped; i++) {
             integrate(state, dt / timesLooped);
         }
@@ -238,8 +247,6 @@ public class Klobject extends Cbody {
 
     public double getDRR() {return drr;}
 
-    public float getSasDrr () { return sasDrr;}
-
     public void setLoc(Point2D newLoc) {
         state.pos = newLoc;
     }
@@ -279,6 +286,14 @@ public class Klobject extends Cbody {
     public void setdThr(double dThr){
         this.dThr =dThr;
     }
+    public double getDeltaV() {
+        return deltaV;
+    }
+
+    public void setDeltaV(double deltaV) {
+        this.deltaV = deltaV;
+    }
+
 
     public void setVel(Point2D in) {
         state.vel = in;

@@ -126,22 +126,15 @@ public class PlayStateInputUtil implements InputProcessor {
         if (Gdx.input.isKeyPressed(Input.Keys.Q) || Gdx.input.isKeyPressed(Input.Keys.E) ) {
             if(mult == 1) {
                 Klobject klob = ps.getKlobjects().get(0);
-                float rr = 0;//SAS THING GARBAGE TEMP CODE
                 if(Gdx.input.isKeyPressed(Input.Keys.Q)){
                     klob.setRR(klob.getRR() + klob.getDRR());
-                    rr+=klob.getSasDrr();//SAS THING GARBAGE TEMP CODE
                 }
                 else if(Gdx.input.isKeyPressed(Input.Keys.E)){
-                    klob.setRR(klob.getRR() + klob.getDRR());
-                    rr-=klob.getSasDrr();//SAS THING GARBAGE TEMP CODE
+                    klob.setRR(klob.getRR() - klob.getDRR());
                 }
-                klob.setRR(rr);//SAS THING GARBAGE TEMP CODE
+
             }
 
-        }
-        else{//SAS THING GARBAGE TEMP CODE
-            Klobject klob = ps.getKlobjects().get(0);
-            klob.setRR(0);
         }
 
 

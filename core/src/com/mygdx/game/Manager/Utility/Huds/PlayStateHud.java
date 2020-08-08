@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 
@@ -31,9 +32,8 @@ public class PlayStateHud implements Disposable{
 
     Table table, compassTable, controlTable;
 
-    int padCompassRight =  -500;
-    int padCompassBotton = 50;
-    float compassScale = .2f;
+    int padCompassRight =  -720;
+    int padCompassBotton = 35;
 
     int padControlLeft =  -220;
     int origPad =  -220;
@@ -49,7 +49,7 @@ public class PlayStateHud implements Disposable{
 
     //Scene2D Widgets
     private final Label  multLabel, altLabel, velLabel, velLabelCopy, multNumberLabel, timeLabel,
-            useForSomethingBetter, actualVel, actualVelCopy,  actualAlt;
+            useForSomethingBetter, actualVel, actualVelCopy,  actualAlt, deltaV ;
 
     //Controls Text
     private Label control_toggle_cam, control_rotate_cam, control_pan_cam, control_zoom_cam, control_throttle_up, control_cut_engines,
@@ -58,6 +58,7 @@ public class PlayStateHud implements Disposable{
 
     Sprite compass;
     ShapeRenderer compassBackground;
+    ShapeRenderer throttleIndicator;
 
     float dashX, dashY, cWidth, cHeight, dashW, dashH;
 
@@ -68,7 +69,7 @@ public class PlayStateHud implements Disposable{
         viewport = new ExtendViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),new OrthographicCamera());
         stage = new Stage(viewport,sb );
 
-        padCompassRight += ps.getScreenWidth();
+
         padControlLeft +=  ps.getScreenWidth();
         origPad += ps.getScreenWidth();
 
@@ -108,6 +109,8 @@ public class PlayStateHud implements Disposable{
         compassTable.bottom();
         compassTable.setFillParent(true);
 
+        //compassTable.moveBy(padCompassRight ,padCompassBotton);
+
         //compass dash stuff
         velLabelCopy = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         actualVelCopy = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
@@ -117,13 +120,17 @@ public class PlayStateHud implements Disposable{
         double alt = ps.getKlobjects().get(0).getLoc().minus(ps.getKlobjects().get(0).getParentBody().getLoc()).distance(0,0);
         actualAlt = new Label(String.format("%.2f",alt), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
-        compassTable.add(altLabel).padRight(padCompassRight);
+        deltaV = new Label("dV: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+
+        compassTable.add(deltaV).padRight(15).padBottom(20);
         compassTable.row();
-        compassTable.add(actualAlt).padRight(padCompassRight).padBottom(20);
+        compassTable.add(altLabel);
         compassTable.row();
-        compassTable.add(velLabelCopy).padRight(padCompassRight);
+        compassTable.add(actualAlt).padBottom(20);
         compassTable.row();
-        compassTable.add(actualVelCopy ).padRight(padCompassRight).padBottom(padCompassBotton);
+        compassTable.add(velLabelCopy);
+        compassTable.row();
+        compassTable.add(actualVelCopy );
 
 
         //****
@@ -134,6 +141,7 @@ public class PlayStateHud implements Disposable{
         controlTable.bottom();
         controlTable.setFillParent(true);
 
+
         setControlLabels(controlTable);
 
         stage.addActor(table);
@@ -141,11 +149,15 @@ public class PlayStateHud implements Disposable{
         stage.addActor(controlTable);
 
 
+        compassTable.moveBy(padCompassRight,padCompassBotton);
+
         initDash();
+
 
     }
     public void initDash(){
         compassBackground = new ShapeRenderer();
+        throttleIndicator = new ShapeRenderer();
 
         dashW = 300;
         dashH = 150;
@@ -177,6 +189,7 @@ public class PlayStateHud implements Disposable{
 
         actualVel.setText(String.format("%.2f",vel));
         actualVelCopy.setText(String.format("%.2f",vel));
+        deltaV.setText("dV: "+String.format("%.2f",ps.getKlobjects().get(0).getDeltaV()));
 
         double p = ps.getKlobjects().get(0).getLoc().minus(ps.getKlobjects().get(0).getParentBody().getLoc()).distance(0,0);
 
@@ -201,6 +214,7 @@ public class PlayStateHud implements Disposable{
     public void draw(SpriteBatch batch){
 
         batch.setProjectionMatrix(getHCamera().combined);
+
         compassBackground.setProjectionMatrix(getHCamera().combined);
         compassBackground.begin(ShapeRenderer.ShapeType.Filled);
         try {
@@ -209,8 +223,22 @@ public class PlayStateHud implements Disposable{
             // e.printStackTrace();
         }
         compassBackground.setColor(100f/255f, 100f/255f, 100f/255f, 1f);
-        compassBackground.setColor(100f/255f, 100f/255f, 100f/255f, 1f);
         compassBackground.end();
+
+        throttleIndicator.begin(ShapeRenderer.ShapeType.Filled);
+        try {
+            Klobject k = ps.getKlobjects().get(0);
+            int side = 10;
+            throttleIndicator.rect((dashW + dashX - ((float)(side/2.0))),((float)(dashY + (dashH-side)*(k.getThrottle()/k.getMaxThrottle()))), side,side);
+            //throttleIndicator.circle((dashW + dashX ),((float)(dashY + (dashH)*(k.getThrottle()/k.getMaxThrottle()))),side);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // e.printStackTrace();
+        }
+        throttleIndicator.setColor(255f/255f, 131f/255f, 0f/255f, 1f);
+        throttleIndicator.end();
+
+
+
         stage.draw();
         batch.begin();
         compass.draw(batch);
@@ -219,7 +247,7 @@ public class PlayStateHud implements Disposable{
 
     public void setControlLabels(Table controlTable){
         control_pan_cam        = new Label("Pan Camera: RMB", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_rotate_cam     = new Label("Rotate Camera: Alt + RMB", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_rotate_cam     = new Label("Rotate Camera: Alt + RMB\nRotate Camera: Arrow Keys", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_zoom_cam       = new Label("Zoom Camera: Scroll Wheel", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_throttle_up    = new Label("Throttle Up: Shift", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_throttle_down  = new Label("Throttle Down: Ctrl", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
