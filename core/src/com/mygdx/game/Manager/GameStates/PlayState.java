@@ -22,10 +22,12 @@ import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.mygdx.game.Manager.Entity.Planets.Cbody.calculateEscapteVel;
+
 public class PlayState extends GameState {
 
     double camX, camY, camRote;
-    float scale = 12000f;
+    float scale = 128 * 1000f;
 
 
     SpriteBatch batch;
@@ -79,18 +81,15 @@ public class PlayState extends GameState {
         planets.add(new Nars(planets.get(0),this));         //5
         planets.add(new Codde117(planets.get(5),this));     //6
 
-       // klobjects.add(new Klobject( planets.get(4),this, Cbody.testROT,  1000000.0, -1140 ));
-        Random random1 = new Random();
-        Random random2 = new Random();
-        Random random3 = new Random();
+        int numOfKlobs = 1;
+        for (int i = 0; i < numOfKlobs; i++){
+            int q = (int) (Math.random() * 7) ;
+            //System.out.println(q);
+            klobjects.add(returnOrbitingKlob(planets.get(q)));
+        }
 
-        klobjects.add(new Klobject( planets.get(2),this, (Math.random() * 360),
-                5000000.0 + (Math.random() * 2000000.0) - 1000000.0, (random1.nextBoolean() ? 1 : -1)*(700 + (Math.random() * 120) -60 )));
-        klobjects.add(new Klobject( planets.get(2),this, (Math.random() * 360),
-                20000000.0 + (Math.random() * 4000000.0) - 1000000.0, (random2.nextBoolean() ? 1 : -1)*(400 + (Math.random() * 80) -40 )));
-        klobjects.add(new Klobject( planets.get(2),this, (Math.random() * 360),
-                70000000.0 + (Math.random() * 10000000.0) - 1000000.0, (random3.nextBoolean() ? 1 : -1)*(200 + (Math.random() * 16) -8 )));
 
+        //////////REMINDer add the apoasis and information in a table similar to control on left
 
         hud = new PlayStateHud(this,batch);
 
@@ -205,6 +204,26 @@ public class PlayState extends GameState {
 
     public OrthographicCamera getBCamera(){
         return bCamera;
+    }
+
+    public Klobject returnOrbitingKlob(Cbody parent){
+
+        Klobject k = new Klobject();
+        Random random = new Random();
+
+        do{
+            double ang = (Math.random() * 360);
+            double dist = parent.getName().equals("sun") ?
+                    Math.random()*30_000_000_000.0 : Math.random()*parent.getSoir();
+
+            double eVel = calculateEscapteVel(parent, dist);
+            double vel = (random.nextBoolean() ? 1 : -1)*(eVel * Math.random());
+            double rr  = (random.nextBoolean() ? 1 : -1)*(Math.random() * 20);
+            k = new Klobject( parent,this, ang, dist, vel, rr);
+
+
+        } while ((k.getPeri() < parent.getRadius() || k.getApoap() > parent.getSoir()) || k.getApoap() < 0 );
+        return  k;
     }
 
     public double getCamX(){return camX;}

@@ -28,14 +28,14 @@ public class Cbody{
     protected Cbody parentBody;
     protected State state;
     protected double MULTIPLIER;
-    protected double gravConstant = 6.67*Math.pow(10,-11);
+    protected static double gravConstant = 6.67*Math.pow(10,-11);
 
     protected ArrayList<Cbody> children;
     protected ArrayList<Klobject> klobs;
 
     protected boolean ccw;
 
-    protected double semiA, semiB, peri, ecc, w, Eanom, Manom, Tanom, startAnom, tmax;
+    protected double semiA, semiB, peri, apoap, ecc, w, Eanom, Manom, Tanom, startAnom, tmax;
     protected Point2D eccVecc;
 
     protected double s;
@@ -53,7 +53,7 @@ public class Cbody{
     protected ShapeRenderer onPathShape;
     protected PathKlob pathKlob;
     protected boolean escapePath;
-    public float scale, circleSize, fStart, fEnd;
+    public float scale, circleSize, fStart, fEnd, fMax;
     protected int[] cirCol;
 
 
@@ -72,6 +72,7 @@ public class Cbody{
         cirCol = new int[]{255,0,0};
         path.setProjectionMatrix(ps.getCamera().combined);
         state = new State();
+        fMax = .7f;
         this.ps = ps;
     }
 
@@ -378,6 +379,8 @@ public class Cbody{
         return vel;
 
     }
+
+
     public double calculateVelocity(Point2D inP) {
 
         double dist = inP.distance(parentBody.getLoc());
@@ -401,6 +404,9 @@ public class Cbody{
 
     }
 
+    public static double calculateEscapteVel(Cbody parentBody, double dist) {
+        return Math.sqrt((2*gravConstant*parentBody.mass)/(dist));
+    }
     public void setStateVel(){
 
 
@@ -490,10 +496,11 @@ public class Cbody{
         ccw = cz > 0;
 
 
-
+        //System.out.println("here"  + semiA);
         semiA = (gm * r) / (2 * gm - r * velSq);
         semiB = semiA * (Math.sqrt((1 - Math.pow(ecc, 2))));
         peri = semiA * ( 1 - ecc);
+        apoap = semiA * ( 1 + ecc);
         focus = findFocus(semiA, semiB);
 
 
@@ -608,6 +615,7 @@ public class Cbody{
 
         double fadeStart = fStart;
         double fadeEnd =   fEnd;
+
         double fade = ps.getScale()-fadeStart;
         if (fade < 0){
             return;
@@ -639,6 +647,8 @@ public class Cbody{
     }
 
     public void drawCircle(){
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         onPathShape.setProjectionMatrix(ps.getCamera().combined);
         onPathShape.begin(ShapeRenderer.ShapeType.Filled);
         try{
@@ -647,7 +657,7 @@ public class Cbody{
         catch (Exception e){
             System.out.println(e);
         }
-        onPathShape.setColor(cirCol[0]/256f, cirCol[1]/256f, cirCol[2]/256f, 1f);
+        onPathShape.setColor(cirCol[0]/256f, cirCol[1]/256f, cirCol[2]/256f, fMax);
         onPathShape.end();
     }
 
@@ -700,8 +710,8 @@ public class Cbody{
         return peri;
     }
 
-    public void setPeri(double peri) {
-        this.peri = peri;
+    public double getApoap() {
+        return apoap;
     }
 
     public String getName(){

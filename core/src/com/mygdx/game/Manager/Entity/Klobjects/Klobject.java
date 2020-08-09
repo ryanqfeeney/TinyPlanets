@@ -12,7 +12,7 @@ import math.geom2d.Point2D;
 public class Klobject extends Cbody {
     float drr = .5f;
 
-    double dThr = 25 / 1000.0; // smaller for slower movement speed
+    double dThr = 4 / 3000.0; // smaller for slower movement speed
     double throttle = 0;
     double maxThrottle = 1;
 
@@ -63,14 +63,17 @@ public class Klobject extends Cbody {
 
     }
 
-    public Klobject(Cbody cb, PlayState pstate, double ang, double d, double v) {
+    public Klobject(Cbody cb, PlayState pstate, double ang, double d, double v, double rr) {
 
         this(cb,pstate);
 
-        Double rote = Math.toRadians(ang);
+        double rote = Math.toRadians(ang);
         double dist = d;
         double vel = v * sp; // positive goes ccw similar to angles // K
 
+        rotateRate = rr;
+
+        System.out.println(rote);
 
         state.pos = new Point2D(parentBody.getX() + Math.cos(rote) * dist,
                 parentBody.getY() + Math.sin(rote) * dist);
@@ -106,6 +109,8 @@ public class Klobject extends Cbody {
         if (fade > 1){
             fade = 1;
         }
+
+        fade *= fMax;
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);

@@ -22,10 +22,10 @@ public class PlayStateInputUtil implements InputProcessor {
 
 
     int sp = 0;
-    float zm = 1.05f;
+    float zm = 1.08f;
     float rotation = 0;
-    float rotationRate = .5f;
-    int look = 2;
+    float rotationRate = .50f;
+    int look = -1;
     float camLX = 0;
     float camLY = 0;
     boolean camLock = true;
@@ -74,8 +74,8 @@ public class PlayStateInputUtil implements InputProcessor {
         if (!camLock){return;}
 
 
-        if(look == -1){
-            klob = ps.getKlobjects().get(0);
+        if(look < 0){
+            klob = ps.getKlobjects().get(Math.abs(look+1));
             x = klob.getX();
             y = klob.getY();
         }
@@ -111,16 +111,21 @@ public class PlayStateInputUtil implements InputProcessor {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ) {
             Klobject klob =  ps.getKlobjects().get(0);
-            if(mult == 1 && klob.getThrottle() > 0) {
-                klob.setThrottle(klob.getThrottle()-klob.getdThrottle());
+            if(mult == 1) {
+                if(klob.getThrottle()-klob.getdThrottle() < 0){
+                    klob.setThrottle(0);
+                }
+                else{
+                    klob.setThrottle(klob.getThrottle()-klob.getdThrottle());
+                }
             }
 
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) ) {
             camLX=0;
             camLY=0;
+            camLock = true;
             look=-1;
-
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.Q) || Gdx.input.isKeyPressed(Input.Keys.E) ) {
@@ -167,8 +172,15 @@ public class PlayStateInputUtil implements InputProcessor {
             ps.getKlobjects().get(0).setThrottle(0);
 
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Z)) {
+            ps.getKlobjects().get(0).setThrottle( ps.getKlobjects().get(0).getMaxThrottle());
+
+        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
             ps.getHud().toggleControl();
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+            ps.getHud().toggleStatus();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 
@@ -190,7 +202,7 @@ public class PlayStateInputUtil implements InputProcessor {
 
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
-
+            camLock=true;
             camLX = 0;
             camLY = 0;
             if(look == 1){ // change to zero to include sun in rotation
@@ -205,6 +217,7 @@ public class PlayStateInputUtil implements InputProcessor {
 
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+            camLock=true;
             camLX = 0;
             camLY = 0;
 
@@ -292,6 +305,7 @@ public class PlayStateInputUtil implements InputProcessor {
                     ps.setCamX(p.getX());
                     ps.setCamY(p.getY());
                     look = -(i+1);
+                    System.out.println(look);
                     break;
                 }
             }

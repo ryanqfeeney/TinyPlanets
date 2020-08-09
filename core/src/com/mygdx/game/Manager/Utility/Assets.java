@@ -56,7 +56,8 @@ public class Assets {
                 // Set the pixel colour of the image n.b. x = cc, y = rc
                 int i = new Random().nextInt(10000);
                 if (i <= 1) {
-                    bg.setColor(Color.WHITE);
+                    //bg.setColor(Color.WHITE);
+                    bg.setColor(1f,1f,1f,.5f);
                     //background.drawPixel(cc,rc,Color.WHITE.toIntBits());
                     bg.fillCircle(cc, rc, 1);
                 }

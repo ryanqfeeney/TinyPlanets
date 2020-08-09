@@ -15,4 +15,6 @@ public class DesktopLauncher {
 		cfg.fullscreen = true;
 		new LwjglApplication(new TinyPlanets(), cfg);
 	}
+
+
 }
