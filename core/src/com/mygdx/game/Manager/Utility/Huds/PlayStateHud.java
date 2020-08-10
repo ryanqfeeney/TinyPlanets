@@ -400,8 +400,8 @@ public class PlayStateHud implements Disposable{
         control_zoom_cam       = new Label("Zoom Camera: Scroll Wheel", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_throttle_up    = new Label("Throttle Up: Shift", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_throttle_down  = new Label("Throttle Down: Ctrl", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_full_engines    = new Label("Full Engines: Z", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_cut_engines    = new Label("Cut Engines: X", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_full_engines    = new Label("Full Throttle: Z", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_cut_engines    = new Label("Cut Throttle: X", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_next_cbody     = new Label("Next C-Body:  +", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_prev_cbody     = new Label("Prev C-Cbody: -", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_rotate_countcw = new Label("Rotate CCW: Q", new Label.LabelStyle(new BitmapFont(), Color.WHITE));

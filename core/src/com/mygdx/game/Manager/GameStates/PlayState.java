@@ -20,6 +20,7 @@ import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import static com.mygdx.game.Manager.Entity.Planets.Cbody.calculateEscapteVel;
@@ -82,11 +83,14 @@ public class PlayState extends GameState {
         planets.add(new Codde117(planets.get(5),this));     //6
 
         int numOfKlobs = 1;
+
         for (int i = 0; i < numOfKlobs; i++){
             int q = (int) (Math.random() * 7) ;
-            //System.out.println(q);
-            klobjects.add(returnOrbitingKlob(planets.get(q)));
+            Klobject k = returnOrbitingKlob(planets.get(q));
+            klobjects.add(k);
         }
+
+
 
 
         //////////REMINDer add the apoasis and information in a table similar to control on left
@@ -124,8 +128,9 @@ public class PlayState extends GameState {
         }
 
         for (Klobject klob : klobjects){
-            klob.drawPath();
+            //klob.drawPath();
         }
+        klobjects.get(0).drawPath();
 
         for (int i = planets.size()-1; i >= 0; i--){
             planets.get(i).drawCircle();
@@ -214,15 +219,19 @@ public class PlayState extends GameState {
         do{
             double ang = (Math.random() * 360);
             double dist = parent.getName().equals("sun") ?
-                    Math.random()*30_000_000_000.0 : Math.random()*parent.getSoir();
+                    Math.random()*30_000_000_000.0 + getPlanets().get(0).getRadius() :
+                    Math.random()*(parent.getSoir()-parent.getRadius()) + parent.getRadius();
 
             double eVel = calculateEscapteVel(parent, dist);
-            double vel = (random.nextBoolean() ? 1 : -1)*(eVel * Math.random());
+            double vel = (random.nextBoolean() ? 1 : -1)*(.8*eVel * Math.random());
             double rr  = (random.nextBoolean() ? 1 : -1)*(Math.random() * 20);
+
+
+
             k = new Klobject( parent,this, ang, dist, vel, rr);
 
 
-        } while ((k.getPeri() < parent.getRadius() || k.getApoap() > parent.getSoir()) || k.getApoap() < 0 );
+        } while (k.getPeri() < parent.getRadius() || k.getApoap() > parent.getSoir() || k.getApoap() < 0 );
         return  k;
     }
 

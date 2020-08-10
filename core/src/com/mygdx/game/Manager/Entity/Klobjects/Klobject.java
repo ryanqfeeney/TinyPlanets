@@ -2,11 +2,12 @@ package com.mygdx.game.Manager.Entity.Klobjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
+import com.mygdx.game.Manager.Utility.FeeneyShapeRenderer;
 import math.geom2d.Point2D;
+
 
 
 public class Klobject extends Cbody {
@@ -14,9 +15,12 @@ public class Klobject extends Cbody {
 
     double dThr = 4 / 3000.0; // smaller for slower movement speed
     double throttle = 0;
-    double maxThrottle = 1;
+    double maxThrottle = 1;//Good max is 1
 
     double deltaV = 0;
+
+    boolean firstUpdate = true;
+    float fPathMin;
 
 
 
@@ -33,6 +37,8 @@ public class Klobject extends Cbody {
         fEnd   = 70;
         parentBody = cb;
         circleSize = 6f;
+        fPathMax = .9f;
+        fPathMin = .4f;
 
         parentBody.addKlob(this);
 
@@ -51,7 +57,7 @@ public class Klobject extends Cbody {
                 Math.cos(rote) * vel);
 
 
-        onPathShape = new ShapeRenderer();
+        onPathShape = new FeeneyShapeRenderer();
         pathKlob = new PathKlob(this);
 
 
@@ -73,15 +79,18 @@ public class Klobject extends Cbody {
 
         rotateRate = rr;
 
-        System.out.println(rote);
-
         state.pos = new Point2D(parentBody.getX() + Math.cos(rote) * dist,
                 parentBody.getY() + Math.sin(rote) * dist);
 
         state.vel = new Point2D(-Math.sin(rote) * vel,
                 Math.cos(rote) * vel);
-        //sprite.setRotation((float)rotation);
+
+
+
         bake();
+
+
+
 
     }
 
@@ -110,12 +119,12 @@ public class Klobject extends Cbody {
             fade = 1;
         }
 
-        fade *= fMax;
+        fade *= fPathMax;
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         path.setProjectionMatrix(ps.getCamera().combined);
-        path.begin(ShapeRenderer.ShapeType.Line);
+        path.begin(FeeneyShapeRenderer.ShapeType.Line);
         escapePath = false;
         try {
             int vertsSize = 2500;
@@ -130,7 +139,7 @@ public class Klobject extends Cbody {
                 path.setColor(0f, 255f, 0f, (float)fade);
             }
 
-            path.polyline(verts);
+            path.polyline(verts,fPathMin);
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
@@ -145,17 +154,18 @@ public class Klobject extends Cbody {
 
     @Override
     public void update(float dt) {
-        if (MULTIPLIER == 1) {
+        if (firstUpdate || (MULTIPLIER == 1 && getThrottle() > 0)) {
             try {
                 oneXupdate(dt);
-                move(dt);
                 bake();
+
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println(e + " update 1x exception");
             }
         } else {
             moveOnOrbit(dt);
         }
+        firstUpdate = false;
         checkSoir();
         rotate(dt);
         fixStartAnom();
@@ -205,8 +215,8 @@ public class Klobject extends Cbody {
 
     @Override
     public void moveOnOrbit(double dt) {
-        super.moveOnOrbit(dt);
         setThrottle(0);
+        super.moveOnOrbit(dt);
     }
 
 
@@ -246,7 +256,7 @@ public class Klobject extends Cbody {
         return state.pos;
     }
 
-    public ShapeRenderer getOnPathShape(){
+    public FeeneyShapeRenderer getOnPathShape(){
         return onPathShape;
     }
 

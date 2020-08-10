@@ -8,6 +8,7 @@ import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject2;
 import com.mygdx.game.Manager.Entity.Klobjects.PathKlob;
 import com.mygdx.game.Manager.GameStates.PlayState;
+import com.mygdx.game.Manager.Utility.FeeneyShapeRenderer;
 import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
 import org.apache.commons.math3.analysis.function.Sinh;
@@ -49,11 +50,11 @@ public class Cbody{
     protected double soir;
 
     protected PlayState ps;
-    protected ShapeRenderer path;
-    protected ShapeRenderer onPathShape;
+    protected FeeneyShapeRenderer path;
+    protected FeeneyShapeRenderer onPathShape;
     protected PathKlob pathKlob;
     protected boolean escapePath;
-    public float scale, circleSize, fStart, fEnd, fMax;
+    public float scale, circleSize, fStart, fEnd, fPathMax, fCirleMax;
     protected int[] cirCol;
 
 
@@ -67,12 +68,13 @@ public class Cbody{
         rotateRate = 0;
         w = 0;
         soir = 0; //sphere of influence radiance
-        path = new ShapeRenderer();
-        onPathShape = new ShapeRenderer();
+        path = new FeeneyShapeRenderer();
+        onPathShape = new FeeneyShapeRenderer();
         cirCol = new int[]{255,0,0};
         path.setProjectionMatrix(ps.getCamera().combined);
         state = new State();
-        fMax = .7f;
+        fPathMax = .8f;
+        fCirleMax = .75f;
         this.ps = ps;
     }
 
@@ -176,7 +178,14 @@ public class Cbody{
         dx = x - getLoc().getX();
         dy = y - getLoc().getY();
 
+        //if(getName().equals("spaceship")){System.out.println("" + state.pos.getX() + " | " + Tanom  );}
         state.pos = new Point2D(x,y);
+        if (Double.isNaN(state.pos.getX())) {
+            System.out.println("HERE");
+        }
+        if (Double.isNaN(state.vel.getX())) {
+            System.out.println("HERE2");
+        }
 
         updateChildren(dx,dy);
 
@@ -362,7 +371,7 @@ public class Cbody{
         double dist = getLoc().distance(parentBody.getLoc());
 
         if (Double.isNaN(dist)){
-            System.out.println("BREAK BECAUSE NAN ON CALC VELOCITY "+getName());
+            System.out.println("BREAK BECAUSE NAN ON CALC VELOCITY " + getName());
             System.exit(0);
         }
         double vel = Math.sqrt(gravConstant*parentBody.mass*((2/dist)-(1/semiA)));
@@ -510,6 +519,8 @@ public class Cbody{
 
 
 
+
+
         startAnom = Tanom;
 
         if (ecc > 1){
@@ -560,7 +571,19 @@ public class Cbody{
         rrr = new Point2D(state.pos.x() - parentBody.getX(),
                 state.pos.y() - parentBody.getY());
 
-        Tanom = Math.acos(dotProd(eccVecc, rrr) / (ecc * rrr.distance(0, 0)));
+        Tanom = dotProd(eccVecc, rrr) / (ecc * rrr.distance(0, 0));
+        if (Tanom > 1) { Tanom = 1;}
+        else if (Tanom < -1) {Tanom = -1;}
+
+        Tanom = Math.acos(Tanom);
+
+
+
+        if(Double.isNaN(getTanom()) && getName().equals("spaceship")){
+            System.out.println( dotProd(eccVecc, rrr) / (ecc*rrr.distance(0,0)));
+
+        }
+
         if (ecc == 0) {
             Tanom = Math.atan2(rrr.getY(),rrr.getX());
         }
@@ -626,11 +649,13 @@ public class Cbody{
             fade = 1;
         }
 
+        fade*=fPathMax;
+
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         path.setProjectionMatrix(ps.getCamera().combined);
-        path.begin(ShapeRenderer.ShapeType.Line);
+        path.begin(FeeneyShapeRenderer.ShapeType.Line);
         path.setColor(255f/255, 255f/255, 255f/255, (float)fade );
 
         try {
@@ -650,14 +675,14 @@ public class Cbody{
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         onPathShape.setProjectionMatrix(ps.getCamera().combined);
-        onPathShape.begin(ShapeRenderer.ShapeType.Filled);
+        onPathShape.begin(FeeneyShapeRenderer.ShapeType.Filled);
         try{
             onPathShape.circle((float)((getX()-ps.getCamX())/scale),(float)((getY()-ps.getCamY())/scale),circleSize);
         }
         catch (Exception e){
             System.out.println(e);
         }
-        onPathShape.setColor(cirCol[0]/256f, cirCol[1]/256f, cirCol[2]/256f, fMax);
+        onPathShape.setColor(cirCol[0]/256f, cirCol[1]/256f, cirCol[2]/256f, fCirleMax);
         onPathShape.end();
     }
 
@@ -678,11 +703,11 @@ public class Cbody{
 
     public void setRR(double rr){ rotateRate = rr;}
 
-    public ShapeRenderer getPath() {
+    public FeeneyShapeRenderer getPath() {
         return path;
     }
 
-    public void setPath(ShapeRenderer path) {
+    public void setPath(FeeneyShapeRenderer path) {
         this.path = path;
     }
 

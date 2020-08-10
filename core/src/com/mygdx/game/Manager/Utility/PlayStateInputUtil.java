@@ -22,6 +22,9 @@ public class PlayStateInputUtil implements InputProcessor {
 
 
     int sp = 0;
+    int[] warp = new int[] {1,2,3,4,5,10,50,100,1000,10000,100000,250000,750000};
+    int spMax = warp.length-1;
+
     float zm = 1.08f;
     float rotation = 0;
     float rotationRate = .50f;
@@ -234,12 +237,13 @@ public class PlayStateInputUtil implements InputProcessor {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
             if (sp > 0) {
+
                 //System.out.println("WARP DOWN      <-------");
-                sp = sp - 1;//Set set to zero sets mult to 1
-                mult = Math.pow(2,sp);
+                sp = sp - 1;
+                mult = warp[sp];
                 ps.getHud().setMult(mult);
                 for (int i = 0; i < ps.getPlanets().size(); i++){
-                    ps.getPlanets().get(i).setMultiplier( Math.pow(2,sp) );
+                    ps.getPlanets().get(i).setMultiplier( mult );
                 }
                 for (Klobject klob : ps.getKlobjects()){
                     klob.setMultiplier(mult);
@@ -249,21 +253,23 @@ public class PlayStateInputUtil implements InputProcessor {
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
             //System.out.println("WARP UP      <-------");
-            sp = sp + 1;//Set set to zero sets mult to 1
-            mult = Math.pow(2,sp);
-            ps.getHud().setMult(mult);
-            for (int i = 0; i < ps.getPlanets().size(); i++){
-                ps.getPlanets().get(i).setMultiplier( mult );
-            }
-            for (Klobject klob : ps.getKlobjects()){
-                klob.setMultiplier(mult);
+            if(sp < spMax) {
+                sp = sp + 1;
+                mult = warp[sp];
+                ps.getHud().setMult(mult);
+                for (int i = 0; i < ps.getPlanets().size(); i++) {
+                    ps.getPlanets().get(i).setMultiplier(mult);
+                }
+                for (Klobject klob : ps.getKlobjects()) {
+                    klob.setMultiplier(mult);
+                }
             }
 
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.SLASH)) {
             //System.out.println("WARP UP      <-------");
             sp = 0;//Set set to zero sets mult to 1
-            mult = Math.pow(2,sp);
+            mult = warp[sp];
             ps.getHud().setMult(mult);
             for (int i = 0; i < ps.getPlanets().size(); i++){
                 ps.getPlanets().get(i).setMultiplier( mult );
