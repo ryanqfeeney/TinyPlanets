@@ -30,7 +30,7 @@ public class PlayStateHud implements Disposable{
 
     int mult = 1;
 
-    Table table, compassTable, controlTable, statusTable;
+    Table table, compassTable, controlTable, statusTable, sasTable;
 
     int padCompassRight =  -720;
     int padCompassBotton = 35;
@@ -64,12 +64,13 @@ public class PlayStateHud implements Disposable{
     private final Label  multLabel, multNumberLabel, timeLabel, altLabel,
             topFullAltString, actualVel, actualAlt;
 
-    private final Label deltaV, velLabelCopy, actualVelCopy, velLabel;
+    private final Label deltaV, velLabelCopy, actualVelCopy, velLabel, compassSAS;
 
     //Controls Text
     private Label control_toggle_cam, control_rotate_cam, control_pan_cam, control_zoom_cam, control_throttle_up, control_cut_engines,
             control_throttle_down, control_next_cbody, control_prev_cbody, control_rotate_countcw, control_rotate_cw, control_full_engines,
-            control_warp_up, control_warp_down, control_drop_warp, control_jump_to, control_click_to, control_toggle_menu, control_toggle_status;
+            control_warp_up, control_warp_down, control_drop_warp, control_jump_to, control_click_to, control_toggle_menu, control_toggle_status,
+            control_toggle_sas;
 
     private Label status_parent, status_parent_mass, status_semiA, status_semiB, status_peri, status_apoap, status_ecc,
             status_w, status_Eanom, status_Manom, status_Tanom, status_startAnom, status_tmax;
@@ -110,6 +111,8 @@ public class PlayStateHud implements Disposable{
         velLabel = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         actualVel = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
+
+
         //add labels to table, padding the top, and giving them all equal width with expandX
         table.add(multLabel).expandX().padTop(10);
         table.add(timeLabel).expandX().padTop(10);
@@ -140,7 +143,6 @@ public class PlayStateHud implements Disposable{
         actualAlt = new Label(String.format("%.2f",alt), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
         deltaV = new Label("dV: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-
         compassTable.add(deltaV).padRight(15).padBottom(20);
         compassTable.row();
         compassTable.add(altLabel);
@@ -164,6 +166,17 @@ public class PlayStateHud implements Disposable{
 
 
         //****
+        //Compass Label
+        //****
+
+        sasTable = new Table();
+        sasTable.bottom().left();
+        sasTable.setFillParent(true);
+
+        compassSAS = new Label("", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        sasTable.add(compassSAS).padBottom(160).padLeft(12);
+
+        //****
         //Status Label
         //****
 
@@ -177,6 +190,7 @@ public class PlayStateHud implements Disposable{
         stage.addActor(compassTable);
         stage.addActor(controlTable);
         stage.addActor(statusTable);
+        stage.addActor(sasTable);
 
         compassTable.moveBy(padCompassRight,padCompassBotton);
 
@@ -209,11 +223,17 @@ public class PlayStateHud implements Disposable{
         compass.setPosition(dashX-cWidth/2+cHeight/2+border,dashY+border);
     }
     public void update(float dt){
+        Klobject k = ps.getKlobjects().get(0);
+
+
         multNumberLabel.setText(mult + "X");
         timeLabel.setText(new Date().toString().toUpperCase()+"");
         //useForSomethingBetter.setText(new Date().toString().toUpperCase()+"");
-        compass.setRotation((float) (Math.toDegrees(ps.getKlobjects().get(0).getRotation()-Math.PI/2)+ps.getCamRotation()));
-        double vel = ps.getKlobjects().get(0).getVel().distance(0,0);
+        compass.setRotation((float) (Math.toDegrees(k.getRotation()-Math.PI/2)+ps.getCamRotation()));
+        double vel = k.getVel().distance(0,0);
+
+        if (k.getSAS()){ compassSAS.setText("SAS"); }
+        else { compassSAS.setText(""); }
 
         moveControl();
         moveStatus();
@@ -223,9 +243,9 @@ public class PlayStateHud implements Disposable{
         actualVel.setText(String.format("%.2f",vel/1000) + " KM/S");
         //tcomp
         actualVelCopy.setText(String.format("%.2f",vel/1000) + " km/s");
-        deltaV.setText("dV: "+String.format("%.2f",ps.getKlobjects().get(0).getDeltaV()) + " km/s");
+        deltaV.setText("dV: "+String.format("%.2f",k.getDeltaV()) + " km/s");
 
-        double p = ps.getKlobjects().get(0).getLoc().minus(ps.getKlobjects().get(0).getParentBody().getLoc()).distance(0,0);
+        double p = k.getLoc().minus(k.getParentBody().getLoc()).distance(0,0);
 
         if (p >= 1000000){
             p = p /1000;
@@ -287,7 +307,6 @@ public class PlayStateHud implements Disposable{
     public void toggleStatus(){
         statusToggle = !statusToggle;
         statusStop = false;
-        System.out.println("something+");
     }
 
     public void moveControl() {
@@ -414,6 +433,7 @@ public class PlayStateHud implements Disposable{
         control_toggle_cam     = new Label("Toggle Camera Lock: C", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_toggle_menu    = new Label("Toggle Control Menu: M", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         control_toggle_status    = new Label("Toggle Orbital Menu: O", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_toggle_sas    = new Label("Toggle Stability Assist: T", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
         controlTable.add(control_pan_cam ).expandX().left().row();
         controlTable.add(control_rotate_cam).expandX().left().row();
@@ -421,6 +441,7 @@ public class PlayStateHud implements Disposable{
         controlTable.add(control_toggle_cam).expandX().left().row();
         controlTable.add(control_rotate_countcw ).left().row();
         controlTable.add(control_rotate_cw ).expandX().left().row();
+        controlTable.add(control_toggle_sas).expandX().left().row();
         controlTable.add(control_throttle_up).expandX().left().row();
         controlTable.add(control_throttle_down ).expandX().left().row();
         controlTable.add(control_full_engines ).expandX().left().row();

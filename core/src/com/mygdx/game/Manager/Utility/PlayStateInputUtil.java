@@ -22,7 +22,7 @@ public class PlayStateInputUtil implements InputProcessor {
 
 
     int sp = 0;
-    int[] warp = new int[] {1,2,3,4,5,10,50,100,1000,10000,100000,250000,750000};
+    int[] warp = new int[] {1,2,3,4,5,10,50,100,1000,10000,100000,250000,750000,1000000,2500000};
     int spMax = warp.length-1;
 
     float zm = 1.08f;
@@ -144,32 +144,29 @@ public class PlayStateInputUtil implements InputProcessor {
             }
 
         }
+        else if (ps.getKlobjects().get(0).getSAS()){
+            if(mult == 1) {
+                Klobject klob = ps.getKlobjects().get(0);
+                if (klob.getRR() > 0 ){
+                    klob.setRR(klob.getRR() - klob.getDRR());
+                }
+                else if ( klob.getRR() < 0){
+                    klob.setRR(klob.getRR() + klob.getDRR());
+                }
+                else if (klob.getRR() == 0){
 
+                }
+                if (Math.abs(klob.getRR()) < (2*klob.getDRR())){
+                    klob.setRR(0);
+                }
+            }
+        }
 
-//        if (Gdx.input.isKeyPressed(Input.Keys.A) ) {
-//            camera.zoom *= zm;
-//           // mv *=mvScale;
-//
-//            if(camera.zoom == 0){
-//                camera.zoom = 1;
-//            }
-//        }
-//        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-//            camera.translate(-mv, 0, 0);
-//            camLX-=mv;
-//        }
-//        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-//            camera.translate(mv, 0, 0);
-//            camLX+=mv;
-//        }
-//        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-//            camera.translate(0, -mv, 0);
-//            camLY-=mv;
-//        }
-//        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-//            camera.translate(0, mv, 0);
-//            camLY+=mv;
-//        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+            if (mult == 1) {
+                ps.getKlobjects().get(0).setSAS(!ps.getKlobjects().get(0).getSAS());
+            }
+        }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.X)) {
             ps.getKlobjects().get(0).setThrottle(0);
@@ -208,14 +205,18 @@ public class PlayStateInputUtil implements InputProcessor {
             camLock=true;
             camLX = 0;
             camLY = 0;
-            if(look == 1){ // change to zero to include sun in rotation
-                //look = ps.getPlanets().size()-1; comment this if you want back in to rotate to the end on cbodies in rotation
+            if(look == 0){ // change to zero to include sun in rotation
+
             }
             else if (look < 0){
                 look = 1;
             }
             else{
                 look -= 1;
+                if (look > 0){setZoom(128*1000f); }
+                else{
+                    setZoom(5*1024*10215);
+                }
             }
 
         }
@@ -231,13 +232,17 @@ public class PlayStateInputUtil implements InputProcessor {
                 if (look == ps.getPlanets().size()-1 ) {look--;} // comment in this line to shuffle through
                 look++;
                 look%=(ps.getPlanets().size()); // flips to zero if reaches the end
-                if (look == 0) { look++; }
+                if (look == 0) {
+                    look++;
+                    setZoom(128*1000f);
+                }
+
             }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
-            if (sp > 0) {
 
+            if (sp > 0) {
                 //System.out.println("WARP DOWN      <-------");
                 sp = sp - 1;
                 mult = warp[sp];
@@ -252,6 +257,7 @@ public class PlayStateInputUtil implements InputProcessor {
             }
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
+            //ps.getKlobjects().get(0).setSAS(false);
             //System.out.println("WARP UP      <-------");
             if(sp < spMax) {
                 sp = sp + 1;
@@ -311,7 +317,6 @@ public class PlayStateInputUtil implements InputProcessor {
                     ps.setCamX(p.getX());
                     ps.setCamY(p.getY());
                     look = -(i+1);
-                    System.out.println(look);
                     break;
                 }
             }
@@ -399,6 +404,20 @@ public class PlayStateInputUtil implements InputProcessor {
     @Override
     public boolean keyTyped(char character) {
         return false;
+    }
+
+    public void setZoom(float zoom){
+        ps.setScale(zoom);//look = ps.getPlanets().size()-1; comment this back in if you want to go around the rotation
+        for (Klobject klob : ps.getKlobjects()){
+            klob.getSprite().setScale((float)(1f/ps.getScale()));
+            klob.getSprite().setOrigin(klob.getSprite().getWidth() / 2, klob.getSprite().getHeight() / 2);
+            klob.scale = ps.getScale();
+        }
+        for (Cbody cb : ps.getPlanets()){
+            cb.getSprite().setSize((float)(cb.getRadius()/ps.getScale()),(float)(cb.getRadius()/ps.getScale()));
+            cb.getSprite().setOrigin(cb.getSprite().getWidth() / 2, cb.getSprite().getHeight() / 2);
+            cb.scale = ps.getScale();
+        }
     }
 
 }

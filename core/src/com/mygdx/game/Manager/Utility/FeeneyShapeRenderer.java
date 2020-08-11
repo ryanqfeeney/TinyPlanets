@@ -1168,7 +1168,7 @@ public class FeeneyShapeRenderer implements Disposable {
     }
 
     /** Draws a polyline in the x/y plane using {@link ShapeType#Line}. The vertices must contain at least 2 points (4 floats x,y). */
-    public void polyline (float[] vertices, int offset, int count, float minAlpha) {
+    public void polyline (float[] vertices, int offset, int count, float minAlpha, float fade) {
         if (count < 4) throw new IllegalArgumentException("Polylines must contain at least 2 points.");
         if (count % 2 != 0) throw new IllegalArgumentException("Polylines must have an even number of vertices.");
 
@@ -1176,7 +1176,6 @@ public class FeeneyShapeRenderer implements Disposable {
         float colorBits;
         float maxAlpha = color.a;
         float diffdiv = 2*(maxAlpha-minAlpha)/(vertices.length);
-        System.out.println();
         for (int i = offset, n = offset + count - 2; i < n; i += 2) {
             float x1 = vertices[i];
             float y1 = vertices[i + 1];
@@ -1187,7 +1186,10 @@ public class FeeneyShapeRenderer implements Disposable {
             x2 = vertices[i + 2];
             y2 = vertices[i + 3];
             color.a -= diffdiv;
-            System.out.println(color.a);
+
+            if (color.a > fade){
+                color.a = fade;
+            }
             colorBits = color.toFloatBits();
             renderer.color(colorBits);
             renderer.vertex(x1, y1, 0);
@@ -1197,8 +1199,8 @@ public class FeeneyShapeRenderer implements Disposable {
     }
 
     /** @see #polyline(float[], int, int) */
-    public void polyline (float[] vertices, float minAlpha) {
-        polyline(vertices, 0, vertices.length, minAlpha);
+    public void polyline (float[] vertices, float minAlpha, float fade) {
+        polyline(vertices, 0, vertices.length, minAlpha, fade);
     }
 
     /** @param other May be null. */

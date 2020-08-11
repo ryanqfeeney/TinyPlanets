@@ -579,10 +579,6 @@ public class Cbody{
 
 
 
-        if(Double.isNaN(getTanom()) && getName().equals("spaceship")){
-            System.out.println( dotProd(eccVecc, rrr) / (ecc*rrr.distance(0,0)));
-
-        }
 
         if (ecc == 0) {
             Tanom = Math.atan2(rrr.getY(),rrr.getX());

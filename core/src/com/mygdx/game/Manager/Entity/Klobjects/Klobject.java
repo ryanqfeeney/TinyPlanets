@@ -11,7 +11,7 @@ import math.geom2d.Point2D;
 
 
 public class Klobject extends Cbody {
-    float drr = .5f;
+    float drr = .6f;
 
     double dThr = 4 / 3000.0; // smaller for slower movement speed
     double throttle = 0;
@@ -20,6 +20,7 @@ public class Klobject extends Cbody {
     double deltaV = 0;
 
     boolean firstUpdate = true;
+    boolean sas = false;
     float fPathMin;
 
 
@@ -139,7 +140,7 @@ public class Klobject extends Cbody {
                 path.setColor(0f, 255f, 0f, (float)fade);
             }
 
-            path.polyline(verts,fPathMin);
+            path.polyline(verts,fPathMin,  (float) fade);
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
@@ -307,6 +308,14 @@ public class Klobject extends Cbody {
 
     public void setDeltaV(double deltaV) {
         this.deltaV = deltaV;
+    }
+
+    public void setSAS(boolean sas){
+        this.sas = sas;
+    }
+
+    public boolean getSAS(){
+        return sas;
     }
 
 
