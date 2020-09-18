@@ -82,7 +82,7 @@ public class PlayState extends GameState {
         planets.add(new Nars(planets.get(0),this));         //5
         planets.add(new Codde117(planets.get(5),this));     //6
 
-        int numOfKlobs = 1;
+        int numOfKlobs = 1000;
 
         for (int i = 0; i < numOfKlobs; i++){
             int q = (int) (Math.random() * 7) ;
