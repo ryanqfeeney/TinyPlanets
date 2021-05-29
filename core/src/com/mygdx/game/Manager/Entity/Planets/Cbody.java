@@ -1,20 +1,16 @@
 package com.mygdx.game.Manager.Entity.Planets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Matrix4;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
-import com.mygdx.game.Manager.Entity.Klobjects.Klobject2;
 import com.mygdx.game.Manager.Entity.Klobjects.PathKlob;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.FeeneyShapeRenderer;
+import com.mygdx.game.Manager.Utility.Sprites.Sprite;
 import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
 import org.apache.commons.math3.analysis.function.Sinh;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -140,7 +136,13 @@ public class Cbody{
         if (rotateRate!=0) {
             sprite.rotate((float) ((rotateRate * dt * MULTIPLIER) % 360));
         }
+        if(this.getName().contains("kerbin")) {
+            System.out.println(sprite.getRotation());
+            System.out.println(System.currentTimeMillis());
+            System.out.println();
+        }
         rotation = (Math.toRadians(sprite.getRotation())+(Math.PI/2))%(2*Math.PI);
+
     }
 
     public void move(float dt){
@@ -668,6 +670,7 @@ public class Cbody{
     }
 
     public void drawCircle(){
+        if(null == onPathShape ) return;
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         onPathShape.setProjectionMatrix(ps.getCamera().combined);

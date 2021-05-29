@@ -1,11 +1,11 @@
 package com.mygdx.game.Manager.Entity.Klobjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import com.mygdx.game.Manager.Utility.FeeneyShapeRenderer;
+import com.mygdx.game.Manager.Utility.Sprites.Sprite;
 import math.geom2d.Point2D;
 
 
@@ -15,7 +15,7 @@ public class Klobject extends Cbody {
 
     double dThr = 4 / 3000.0; // smaller for slower movement speed
     double throttle = 0;
-    double maxThrottle = 1;//Good max is 1
+    double maxThrottle = 1.2;//Good max is 1
 
     double deltaV = 0;
 
@@ -70,7 +70,7 @@ public class Klobject extends Cbody {
 
     }
 
-    public Klobject(Cbody cb, PlayState pstate, double ang, double d, double v, double rr) {
+    public Klobject(Cbody cb, PlayState pstate, double ang, double d, double v, double rr, boolean pathBool, boolean circleBool) {
 
         this(cb,pstate);
 
@@ -85,6 +85,13 @@ public class Klobject extends Cbody {
 
         state.vel = new Point2D(-Math.sin(rote) * vel,
                 Math.cos(rote) * vel);
+
+        if (!pathBool) {
+            path = null;
+        }
+        if (!circleBool) {
+            onPathShape = null;
+        }
 
 
 
@@ -107,6 +114,7 @@ public class Klobject extends Cbody {
 
     @Override
     public void drawPath() {
+        if(null == path) return;
         double fadeStart = fStart;
         double fadeEnd =   fEnd;
         double fade = ps.getScale()-fadeStart;

@@ -2,7 +2,6 @@ package com.mygdx.game.Manager.GameStates;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -17,10 +16,10 @@ import com.mygdx.game.Manager.Entity.Planets.Fiji.Fiji;
 import com.mygdx.game.Manager.Utility.Assets;
 import com.mygdx.game.Manager.Utility.Huds.PlayStateHud;
 import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
+import com.mygdx.game.Manager.Utility.Sprites.Sprite;
 
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
 import static com.mygdx.game.Manager.Entity.Planets.Cbody.calculateEscapteVel;
@@ -82,18 +81,15 @@ public class PlayState extends GameState {
         planets.add(new Nars(planets.get(0),this));         //5
         planets.add(new Codde117(planets.get(5),this));     //6
 
-        int numOfKlobs = 1000;
-
-        for (int i = 0; i < numOfKlobs; i++){
-            int q = (int) (Math.random() * 7) ;
-            Klobject k = returnOrbitingKlob(planets.get(q));
+        int numOfKlobs = 1;
+        klobjects.add(returnOrbitingKlob(planets.get((int)(Math.random() * planets.size())), true,true));
+        for (int i = 1; i < numOfKlobs; i++){
+            int q = (int) (Math.random() * planets.size()) ;
+            Klobject k = returnOrbitingKlob(planets.get(q), false,true);
             klobjects.add(k);
         }
 
 
-
-
-        //////////REMINDer add the apoasis and information in a table similar to control on left
 
         hud = new PlayStateHud(this,batch);
 
@@ -211,7 +207,7 @@ public class PlayState extends GameState {
         return bCamera;
     }
 
-    public Klobject returnOrbitingKlob(Cbody parent){
+    public Klobject returnOrbitingKlob(Cbody parent, boolean pathBool, boolean circleBool){
 
         Klobject k = new Klobject();
         Random random = new Random();
@@ -228,7 +224,7 @@ public class PlayState extends GameState {
 
 
 
-            k = new Klobject( parent,this, ang, dist, vel, rr);
+            k = new Klobject( parent,this, ang, dist, vel, rr, pathBool,circleBool);
 
 
         } while (k.getPeri() < parent.getRadius() || k.getApoap() > parent.getSoir() || k.getApoap() < 0 );

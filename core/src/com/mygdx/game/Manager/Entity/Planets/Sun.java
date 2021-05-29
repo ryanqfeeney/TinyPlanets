@@ -1,11 +1,12 @@
 package com.mygdx.game.Manager.Entity.Planets;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
+
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
+import com.mygdx.game.Manager.Utility.Sprites.Sprite;
 import math.geom2d.Point2D;
 
 public class Sun extends Cbody{
@@ -22,12 +23,12 @@ public class Sun extends Cbody{
         sprite.setSize((float)radius/ ps.getScale(),(float)radius/ps.getScale());
         sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
         cirCol = new int[]{219,216,42};
-
+        rotateRate = 1;
     }
 
     @Override
     public void update(float dt) {
-
+        rotate(dt);
     }
 
     @Override

@@ -1,9 +1,10 @@
 package com.mygdx.game.Manager.Entity.Planets.Nars;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
+
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
+import com.mygdx.game.Manager.Utility.Sprites.Sprite;
 
 
 public class Codde117 extends Cbody {

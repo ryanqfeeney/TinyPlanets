@@ -50,9 +50,9 @@ public class PlayStateInputUtil implements InputProcessor {
     @Override
     public boolean scrolled(int amount) {
         if(amount == -1){
-            if (ps.getScale() > 1) {
+            //if (ps.getScale() > 1) {
                 ps.setScale(ps.getScale() / zm);
-            }
+            //}
         }
         else if(amount == 1){
             ps.setScale(ps.getScale()*zm);

@@ -1,14 +1,9 @@
 package com.mygdx.game.Manager.Entity.Planets.Kerbin;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
-import math.geom2d.Point2D;
+import com.mygdx.game.Manager.Utility.Sprites.Sprite;
 
 
 public class Minmus extends Cbody {
@@ -19,7 +14,7 @@ public class Minmus extends Cbody {
         parentBody = pBody;
         parentBody.addChild(this);
 
-
+        rotateRate = -.02;
         radius=600_000;
         mass=2.65*Math.pow(10,19);
         semiA = 47_000_000.0;
