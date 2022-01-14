@@ -2,7 +2,10 @@ package com.mygdx.game.Manager.GameStates;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
@@ -10,13 +13,13 @@ import com.mygdx.game.Manager.Entity.Planets.*;
 import com.mygdx.game.Manager.Entity.Planets.Kerbin.Kerbin;
 import com.mygdx.game.Manager.Entity.Planets.Kerbin.Minmus;
 import com.mygdx.game.Manager.Entity.Planets.Kerbin.Mun;
-import com.mygdx.game.Manager.Entity.Planets.Nars.Codde117;
+import com.mygdx.game.Manager.Entity.Planets.Nars.Hacobo;
 import com.mygdx.game.Manager.Entity.Planets.Nars.Nars;
 import com.mygdx.game.Manager.Entity.Planets.Fiji.Fiji;
 import com.mygdx.game.Manager.Utility.Assets;
 import com.mygdx.game.Manager.Utility.Huds.PlayStateHud;
 import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
-import com.mygdx.game.Manager.Utility.Sprites.Sprite;
+import dev.lyze.gdxtinyvg.drawers.TinyVGShapeDrawer;
 
 
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ public class PlayState extends GameState {
 
     SpriteBatch batch;
     Sprite backgroundSprite;
+    private TinyVGShapeDrawer drawer;
 
     PlayStateHud hud;
     Viewport bViewport;
@@ -51,7 +55,7 @@ public class PlayState extends GameState {
         batch = new SpriteBatch();
 
         int c = (int)(Math.sqrt(Math.pow(width,2)+Math.pow(height,2))+1);
-
+        drawer = new TinyVGShapeDrawer(new SpriteBatch(), new TextureRegion(new Texture("pixel.png")));
         //move stars to sprite
         backgroundSprite = new Sprite(assets.manager.get(Assets.background));
         backgroundSprite.setScale(1);
@@ -79,10 +83,11 @@ public class PlayState extends GameState {
         planets.add(new Mun(planets.get(2),this));          //3
         planets.add(new Minmus(planets.get(2),this));       //4
         planets.add(new Nars(planets.get(0),this));         //5
-        planets.add(new Codde117(planets.get(5),this));     //6
+        planets.add(new Hacobo(planets.get(5),this));     //6
 
         int numOfKlobs = 1;
-        klobjects.add(returnOrbitingKlob(planets.get((int)(Math.random() * planets.size())), true,true));
+        //klobjects.add(returnOrbitingKlob(planets.get((int)(Math.random() * planets.size())), true,true));
+        klobjects.add(returnOrbitingKlob(planets.get(2), true,true));
         for (int i = 1; i < numOfKlobs; i++){
             int q = (int) (Math.random() * planets.size()) ;
             Klobject k = returnOrbitingKlob(planets.get(q), false,true);
@@ -98,10 +103,11 @@ public class PlayState extends GameState {
     @Override
     public void render(float dt) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
         camera.update();
         bCamera.update();
         hud.update(dt);
+
 
         for (Cbody cb : planets){
             cb.update(dt);
@@ -111,7 +117,6 @@ public class PlayState extends GameState {
         }
 
         pscu.lookAtCbody();
-
 
         batch.setProjectionMatrix(bViewport.getCamera().combined);
         batch.begin();
@@ -123,9 +128,9 @@ public class PlayState extends GameState {
             planets.get(i).drawPath();
         }
 
-        for (Klobject klob : klobjects){
-            //klob.drawPath();
-        }
+//        for (Klobject klob : klobjects){
+//            //klob.drawPath();
+//        }
         klobjects.get(0).drawPath();
 
         for (int i = planets.size()-1; i >= 0; i--){
@@ -136,16 +141,18 @@ public class PlayState extends GameState {
             klob.drawCircle();
         }
 
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
 
         for (Cbody cb : planets) {
             drawPlanet(cb);
+            //drawTvg(cb, getViewport());
         }
         for (Klobject cb : klobjects){
             drawKlob(cb);
         }
-        batch.end();
+
+        for (Cbody cb : planets) {
+            //drawSurface(cb);
+        }
 
         hud.draw(batch);
     }
@@ -167,19 +174,67 @@ public class PlayState extends GameState {
 
     }
 
+    public void drawTvg(Cbody cb, Viewport viewport) {
+//        Gdx.gl.glClearColor(0.25f, 0.25f, 0.25f, 1);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT); // GL20.GL_STENCIL_BUFFER_BIT is very important
+
+
+        //viewport.apply();
+
+        drawer.getBatch().setProjectionMatrix(viewport.getCamera().combined);
+        drawer.getBatch().begin();
+//        float x = (float)(((cb.getX()-camX)/scale)-cb.getTvg().getScaledWidth()/2);
+//        float y = (float)(((cb.getY()-camY)/scale)-cb.getTvg().getScaledHeight()/2);
+        float x = (float)(((cb.getX()-camX)/scale)-cb.getTvg().getScaledWidth()/2);
+        float y = (float)(((cb.getY()-camY)/scale)-cb.getTvg().getScaledHeight()/2);
+        cb.getTvg().setPosition(x, y);
+//        if(scale < 2000000
+//                &&
+//                Math.abs(x) < getScreenWidth() + cb.getTvg().getScaledWidth() &&
+//                Math.abs(y) < getScreenHeight() + cb.getTvg().getScaledHeight()) {
+//            cb.getTvg().draw(drawer);
+//        }
+        cb.getTvg().draw(drawer);
+        drawer.getBatch().end();
+
+    }
+
     private void drawPlanet(Cbody planet) {
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
         Sprite sprite = planet.getSprite();
         float x = (float)((planet.getX()-camX)/scale-sprite.getWidth()/2);
         float y = (float)((planet.getY()-camY)/scale-sprite.getHeight()/2);
         sprite.setPosition(x, y);
         planet.getSprite().draw(batch);
+        batch.end();
+
+
     }
     private void drawKlob(Klobject klob) {
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
         Sprite sprite = klob.getSprite();
         float x = (float)((klob.getX()-camX)/scale-sprite.getWidth()/2);
         float y = (float)((klob.getY()-camY)/scale-sprite.getHeight()/2);
         sprite.setPosition(x,y);
         klob.getSprite().draw(batch);
+        batch.end();
+    }
+
+    public void drawSurface(Cbody cb){
+        if(null == cb ) return;
+//        Gdx.gl.glEnable(GL20.GL_BLEND);
+//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        cb.getSurface().setProjectionMatrix(getCamera().combined);
+        cb.getSurface().begin(ShapeRenderer.ShapeType.Line);
+
+        float rsv[][] = cb.getRelativeSVertices();
+
+        for (float[] f : rsv) {
+            cb.getSurface().polyline(f);
+        }
+        cb.getSurface().end();
     }
 
 
@@ -214,6 +269,7 @@ public class PlayState extends GameState {
 
         do{
             double ang = (Math.random() * 360);
+            double rote = (Math.random() * 360);
             double dist = parent.getName().equals("sun") ?
                     Math.random()*30_000_000_000.0 + getPlanets().get(0).getRadius() :
                     Math.random()*(parent.getSoir()-parent.getRadius()) + parent.getRadius();
@@ -224,7 +280,7 @@ public class PlayState extends GameState {
 
 
 
-            k = new Klobject( parent,this, ang, dist, vel, rr, pathBool,circleBool);
+            k = new Klobject( parent,this, 0, ang, dist, vel, rr, pathBool,circleBool);
 
 
         } while (k.getPeri() < parent.getRadius() || k.getApoap() > parent.getSoir() || k.getApoap() < 0 );

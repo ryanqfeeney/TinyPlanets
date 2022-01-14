@@ -16,16 +16,9 @@ public class TinyPlanets extends ApplicationAdapter {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 
-
 		assets = new Assets();
-
 		assets.load( );
-		assets.manager.finishLoading();
-
 		gsm = new GameStateManager(assets);
-
-
-
 
 	}
 

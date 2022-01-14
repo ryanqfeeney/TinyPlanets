@@ -1,11 +1,20 @@
 package com.mygdx.game.Manager.Entity.Planets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.Entity.Klobjects.PathKlob;
 import com.mygdx.game.Manager.GameStates.PlayState;
-import com.mygdx.game.Manager.Utility.FeeneyShapeRenderer;
-import com.mygdx.game.Manager.Utility.Sprites.Sprite;
+
+import dev.lyze.gdxtinyvg.TinyVG;
+import dev.lyze.gdxtinyvg.drawers.TinyVGShapeDrawer;
+
+
 import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
 import org.apache.commons.math3.analysis.function.Sinh;
@@ -21,6 +30,7 @@ public class Cbody{
     public static double testROT = 67.6+150;
 
     protected String name;
+    protected TinyVG tvg;
     protected Sprite sprite;
     protected Cbody parentBody;
     protected State state;
@@ -46,12 +56,18 @@ public class Cbody{
     protected double soir;
 
     protected PlayState ps;
-    protected FeeneyShapeRenderer path;
-    protected FeeneyShapeRenderer onPathShape;
+
+    protected ShapeRenderer path;
+    protected ShapeRenderer onPathShape;
+    protected ShapeRenderer surface;
+
+
+
     protected PathKlob pathKlob;
     protected boolean escapePath;
     public float scale, circleSize, fStart, fEnd, fPathMax, fCirleMax;
     protected int[] cirCol;
+    protected float[][] sVertices;
 
 
 
@@ -64,10 +80,13 @@ public class Cbody{
         rotateRate = 0;
         w = 0;
         soir = 0; //sphere of influence radiance
-        path = new FeeneyShapeRenderer();
-        onPathShape = new FeeneyShapeRenderer();
-        cirCol = new int[]{255,0,0};
+        path = new ShapeRenderer();
+        onPathShape = new ShapeRenderer();
+        surface = new ShapeRenderer();
+
         path.setProjectionMatrix(ps.getCamera().combined);
+        surface.setProjectionMatrix(ps.getCamera().combined);
+        cirCol = new int[]{255,0,0};
         state = new State();
         fPathMax = .8f;
         fCirleMax = .75f;
@@ -75,26 +94,25 @@ public class Cbody{
     }
 
     public void afterCall() {
+        tvg.centerOrigin();
         scale = ps.getScale();
         focus = findFocus(semiA, semiB);
         sprite.setSize((float)radius / (float)ps.getScale(),(float)radius/(float)ps.getScale());
         sprite.setSize((float)radius / (float)ps.getScale(),(float)radius/(float)ps.getScale());
+        getTvg().setSize((float)(getRadius()/ps.getScale()),(float)(getRadius()/ps.getScale()));
+
         sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
+        sprite.setRotation(-(float)rotation);
 
         fixStartAnom();
         rr = (semiA*(1-(ecc*ecc))) / (1 + (ecc * Math.cos(startAnom)));
 
 
-        x = parentBody.getX() + rr*Math.cos(startAnom + w);
-        y = parentBody.getY() + rr*Math.sin(startAnom + w);
-
-//        dx = x - getLoc().getX();
-//        dy = y - getLoc().getY();
+        double x = parentBody.getX() + rr*Math.cos(startAnom + w);
+        double y = parentBody.getY() + rr*Math.sin(startAnom + w);
 
 
         state.pos = new Point2D(x,y);
-//        state.pos = new Point2D(parentBody.getX() + Math.cos(startAnom)*semiB,
-//                parentBody.getY() + Math.sin(startAnom)*semiB);
 
         double vel = calculateVelocity()*sp; // positive goes ccw similar to angles // K
 
@@ -134,14 +152,15 @@ public class Cbody{
 
     public void rotate(float dt){
         if (rotateRate!=0) {
-            sprite.rotate((float) ((rotateRate * dt * MULTIPLIER) % 360));
+            sprite.rotate(-(float) ((rotateRate * dt * MULTIPLIER) % 360));
+            if(null != getTvg()) {
+                getTvg().setRotation(getTvg().getRotation() + ((float) ((rotateRate * dt * MULTIPLIER) % 360)));
+            }
+
         }
-        if(this.getName().contains("kerbin")) {
-            System.out.println(sprite.getRotation());
-            System.out.println(System.currentTimeMillis());
-            System.out.println();
-        }
-        rotation = (Math.toRadians(sprite.getRotation())+(Math.PI/2))%(2*Math.PI);
+        rotation = Math.toRadians(-sprite.getRotation())%(2*Math.PI);
+
+
 
     }
 
@@ -150,8 +169,9 @@ public class Cbody{
     }
 
 
-    protected double velo, x, y, dSd0, q, rr, dx, dy, normMid, velAngle, phi;
+    protected double velo, dSd0, q, rr, dx, dy, normMid, velAngle, phi;
     public void moveOnOrbit(double dt){
+        double x, y;
         velo = state.vel.distance(0, 0);
 
         if (ccw) {
@@ -630,7 +650,25 @@ public class Cbody{
         }
 
     }
-    float resetX, resetY, nextX, nextY;
+    public float[][] generateVertices(int size, int s){
+        int numberOfSegments = s;
+        double rad = .5*getRadius();
+        float v[][] = new float[numberOfSegments][2 * size];
+        double angle = 0;
+        double inc =  2 * Math.PI / size / numberOfSegments;
+
+        for(int i = 0; i < numberOfSegments; i++) {
+            for (int j = 0; j < 2 * size; j+= 2) {
+
+                v[i][j] = (float) (rad * Math.cos(angle));
+                v[i][j + 1] = (float) (rad * Math.sin(angle));
+
+                angle += inc;
+            }
+        }
+
+        return v;
+    }
 
     public void drawPath() {
 
@@ -653,7 +691,7 @@ public class Cbody{
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         path.setProjectionMatrix(ps.getCamera().combined);
-        path.begin(FeeneyShapeRenderer.ShapeType.Line);
+        path.begin(ShapeRenderer.ShapeType.Line);
         path.setColor(255f/255, 255f/255, 255f/255, (float)fade );
 
         try {
@@ -674,7 +712,7 @@ public class Cbody{
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         onPathShape.setProjectionMatrix(ps.getCamera().combined);
-        onPathShape.begin(FeeneyShapeRenderer.ShapeType.Filled);
+        onPathShape.begin(ShapeRenderer.ShapeType.Filled);
         try{
             onPathShape.circle((float)((getX()-ps.getCamX())/scale),(float)((getY()-ps.getCamY())/scale),circleSize);
         }
@@ -684,6 +722,8 @@ public class Cbody{
         onPathShape.setColor(cirCol[0]/256f, cirCol[1]/256f, cirCol[2]/256f, fCirleMax);
         onPathShape.end();
     }
+
+
 
     public void dispose(){
         path.dispose();
@@ -702,12 +742,20 @@ public class Cbody{
 
     public void setRR(double rr){ rotateRate = rr;}
 
-    public FeeneyShapeRenderer getPath() {
+    public ShapeRenderer getPath() {
         return path;
     }
 
-    public void setPath(FeeneyShapeRenderer path) {
+    public void setPath(ShapeRenderer path) {
         this.path = path;
+    }
+
+    public ShapeRenderer getSurface() {
+        return surface;
+    }
+
+    public void setSurface(ShapeRenderer surface) {
+        this.surface = surface;
     }
 
     public double getRadius() {
@@ -744,6 +792,11 @@ public class Cbody{
     public Sprite getSprite(){
         return sprite;
     }
+
+    public TinyVG getTvg() {
+        return tvg;
+    }
+
     public void setMultiplier(double mult){
         MULTIPLIER = mult;
         if (pathKlob != null){
@@ -817,8 +870,26 @@ public class Cbody{
         return Manom;
     }
 
+    public float[][] getSVertices() {
+        return sVertices;
+    }
 
+    public float[][] getRelativeSVertices() {
+        float clone[][] = getSVertices().clone();
+        for(int i = 0; i < clone.length; i++) {
+            for (int j = 0; j < clone[i].length; j += 2) {
+                clone[i][j] /= scale;
+                clone[i][j+1] /= scale;
+                clone[i][j] += (float) ((getX() - ps.getCamX()) / scale);
+                clone[i][j+1] += (float) ((getY() - ps.getCamY()) / scale);
+            }
+        }
+        return clone;
+    }
 
+    public void setSVertices(float[][] sVertices) {
+        this.sVertices = sVertices;
+    }
 
     public ArrayList<Cbody> getChildren(){
         return children;

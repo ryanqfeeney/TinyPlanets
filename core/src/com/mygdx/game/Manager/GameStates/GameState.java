@@ -40,6 +40,12 @@ public class GameState {
         return camera;
     }
 
+
+    public ExtendViewport getViewport() {
+        return viewport;
+    }
+
+
     public int getScreenHeight() {
         return height;
     }

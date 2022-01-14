@@ -2,12 +2,8 @@ package com.mygdx.game.Manager.Entity.Klobjects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
-import com.mygdx.game.Manager.GameStates.PlayState;
-import com.mygdx.game.Manager.Utility.Assets;
-import com.mygdx.game.Manager.Utility.FeeneyShapeRenderer;
 import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
 import org.apache.commons.math3.analysis.function.Sinh;
@@ -25,8 +21,8 @@ public class PathKlob extends Klobject{
         MULTIPLIER = 1;
         w = 0;
 
-        path = new FeeneyShapeRenderer();
-        onPathShape = new FeeneyShapeRenderer();
+        path = new ShapeRenderer();
+        onPathShape = new ShapeRenderer();
 
 
         cirCol = new int[]{255,0,0};
@@ -110,7 +106,7 @@ public class PathKlob extends Klobject{
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         path.setProjectionMatrix(ps.getCamera().combined);
-        path.begin(FeeneyShapeRenderer.ShapeType.Line);
+        path.begin(ShapeRenderer.ShapeType.Line);
         escapePath = false;
         try {
             int vertsSize = 2500;

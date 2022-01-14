@@ -1,11 +1,11 @@
 package com.mygdx.game.Manager.Entity.Klobjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
-import com.mygdx.game.Manager.Utility.FeeneyShapeRenderer;
-import com.mygdx.game.Manager.Utility.Sprites.Sprite;
 import math.geom2d.Point2D;
 
 
@@ -58,7 +58,7 @@ public class Klobject extends Cbody {
                 Math.cos(rote) * vel);
 
 
-        onPathShape = new FeeneyShapeRenderer();
+        onPathShape = new ShapeRenderer();
         pathKlob = new PathKlob(this);
 
 
@@ -70,16 +70,17 @@ public class Klobject extends Cbody {
 
     }
 
-    public Klobject(Cbody cb, PlayState pstate, double ang, double d, double v, double rr, boolean pathBool, boolean circleBool) {
+    public Klobject(Cbody cb, PlayState pstate, double rotation ,double ang, double d, double v, double rr, boolean pathBool, boolean circleBool) {
 
         this(cb,pstate);
 
+        this.rotation = rotation;
         double rote = Math.toRadians(ang);
         double dist = d;
         double vel = v * sp; // positive goes ccw similar to angles // K
 
         rotateRate = rr;
-
+        sprite.setRotation((float)rotation);
         state.pos = new Point2D(parentBody.getX() + Math.cos(rote) * dist,
                 parentBody.getY() + Math.sin(rote) * dist);
 
@@ -133,7 +134,7 @@ public class Klobject extends Cbody {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         path.setProjectionMatrix(ps.getCamera().combined);
-        path.begin(FeeneyShapeRenderer.ShapeType.Line);
+        path.begin(ShapeRenderer.ShapeType.Line);
         escapePath = false;
         try {
             int vertsSize = 2500;
@@ -210,7 +211,7 @@ public class Klobject extends Cbody {
 //        Point2D velN = getVel().plus(new Point2D(Math.cos(getRotation()), Math.sin(getRotation()))
 //                .scale(getThrottle()));
 
-        Point2D dV = new Point2D(Math.cos(getRotation()), Math.sin(getRotation())).scale(getThrottle());
+        Point2D dV = new Point2D(Math.cos(getRotation()), Math.sin(getRotation())).scale(getThrottle()).rotate(90);
         Point2D velN = getVel().plus(dV);
         setDeltaV(getDeltaV()+dV.distance(0,0));
         setVel(velN);
@@ -265,7 +266,7 @@ public class Klobject extends Cbody {
         return state.pos;
     }
 
-    public FeeneyShapeRenderer getOnPathShape(){
+    public ShapeRenderer getOnPathShape(){
         return onPathShape;
     }
 

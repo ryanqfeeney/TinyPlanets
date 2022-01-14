@@ -1,18 +1,21 @@
 package com.mygdx.game.Manager.Entity.Planets.Kerbin;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
-import com.mygdx.game.Manager.Utility.Sprites.Sprite;
+import dev.lyze.gdxtinyvg.TinyVG;
 
 public class Kerbin extends Cbody {
     public Kerbin(Cbody pBody, PlayState ps){
         super(ps);
         name = "kerbin";
         sprite = new Sprite(ps.assets.manager.get(Assets.kerbin));
+        tvg = ps.assets.tvgManager.get("planets/kerbin/kerbin.tvg", TinyVG.class);
         parentBody = pBody;
         parentBody.addChild(this);
         radius=1_000_000;
+        sVertices = generateVertices(2500,8);
         rotateRate = 0.0166;
         mass=5.3*Math.pow(10,22);
         semiA = 13_600_000_000.0;
@@ -23,6 +26,7 @@ public class Kerbin extends Cbody {
         cirCol = new int[]{0,30,255};
         fStart = 200000;
         fEnd   = 2000000;
+        rotation = 0;
         afterCall();
     }
 

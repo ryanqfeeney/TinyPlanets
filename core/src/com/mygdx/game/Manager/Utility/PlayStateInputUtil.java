@@ -3,19 +3,15 @@ package com.mygdx.game.Manager.Utility;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import math.geom2d.Point2D;
-import math.geom2s.Point2S;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.concurrent.Executors;
 
 
 public class PlayStateInputUtil implements InputProcessor {
@@ -48,13 +44,13 @@ public class PlayStateInputUtil implements InputProcessor {
     }
 
     @Override
-    public boolean scrolled(int amount) {
-        if(amount == -1){
-            //if (ps.getScale() > 1) {
+    public boolean scrolled(float x, float y) {
+        if( y == -1 ){
+            if (ps.getScale() > 1) {
                 ps.setScale(ps.getScale() / zm);
-            //}
+            }
         }
-        else if(amount == 1){
+        else if(y == 1){
             ps.setScale(ps.getScale()*zm);
         }
         for (Klobject klob : ps.getKlobjects()){
@@ -66,6 +62,8 @@ public class PlayStateInputUtil implements InputProcessor {
             cb.getSprite().setSize((float)(cb.getRadius()/ps.getScale()),(float)(cb.getRadius()/ps.getScale()));
             cb.getSprite().setOrigin(cb.getSprite().getWidth() / 2, cb.getSprite().getHeight() / 2);
             cb.scale = ps.getScale();
+            cb.getTvg().setSize((float)(cb.getRadius()/ps.getScale()),(float)(cb.getRadius()/ps.getScale()));
+
         }
         return false;
     }
@@ -293,13 +291,15 @@ public class PlayStateInputUtil implements InputProcessor {
             camera.unproject(input);
 
             for (int i = 0; i < ps.getPlanets().size(); i++){
-                if(ps.getPlanets().get(i).getSprite().getBoundingRectangle().contains(input.x,input.y)||
+                System.out.println(ps.getPlanets().get(i));
+                if(   //ps.getPlanets().get(i).getSprite().getBoundingRectangle().contains(input.x,input.y) ||
+                        ps.getPlanets().get(i).getTvg().isInBoundingBox(new Vector2(input.x,input.y)) ||
                         checkCircleClick(input.x,input.y,ps.getPlanets().get(i))) {
+
                     camLX = 0;
                     camLY = 0;
                     camLock = true;
                     p = ps.getPlanets().get(i);
-                    //camera.position.slerp(new Vector3((float)p.getX(),(float)p.getY(),0f),.2f);
                     ps.setCamX(p.getX());
                     ps.setCamY(p.getY());
                     look = i;
@@ -417,7 +417,10 @@ public class PlayStateInputUtil implements InputProcessor {
             cb.getSprite().setSize((float)(cb.getRadius()/ps.getScale()),(float)(cb.getRadius()/ps.getScale()));
             cb.getSprite().setOrigin(cb.getSprite().getWidth() / 2, cb.getSprite().getHeight() / 2);
             cb.scale = ps.getScale();
+            cb.getTvg().setSize((float)(cb.getRadius()/ps.getScale()),(float)(cb.getRadius()/ps.getScale()));
         }
+
+
     }
 
 }

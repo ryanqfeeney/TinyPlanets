@@ -1,11 +1,11 @@
 package com.mygdx.game.Manager.Entity.Planets.Kerbin;
 
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
-import com.mygdx.game.Manager.Utility.Sprites.Sprite;
-import math.geom2d.Point2D;
+import dev.lyze.gdxtinyvg.TinyVG;
 
 
 public class Mun extends Cbody {
@@ -13,9 +13,11 @@ public class Mun extends Cbody {
         super(ps);
         name = "mun";
         sprite = new Sprite(ps.assets.manager.get(Assets.mun));
+        tvg = ps.assets.tvgManager.get("planets/kerbin/mun/mun.tvg", TinyVG.class);
         parentBody = pBody;
         parentBody.addChild(this);
         radius=400_000;
+        sVertices = generateVertices(2500,8);
         rotateRate = .016;
         mass=9.76*Math.pow(10,20);
         semiA = 9_000_000.0;

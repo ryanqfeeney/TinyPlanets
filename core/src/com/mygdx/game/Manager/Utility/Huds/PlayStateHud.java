@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -17,7 +18,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
-import com.mygdx.game.Manager.Utility.Sprites.Sprite;
 
 import java.util.Date;
 
@@ -212,7 +212,7 @@ public class PlayStateHud implements Disposable{
         compass = new Sprite(ps.assets.manager.get(Assets.spaceship));
         compass.setSize(dashH/compass.getHeight()* compass.getWidth(),dashH);
         compass.setOrigin(compass.getWidth() / 2, compass.getHeight() / 2);
-        compass.setRotation((float) Math.toDegrees(ps.getKlobjects().get(0).getRotation()-Math.PI/2));
+        compass.setRotation((float) Math.toDegrees(ps.getKlobjects().get(0).getRotation()+Math.PI));
 
         dashW = 2*border+dashW;
         dashH = 2*border+dashH;
@@ -229,7 +229,7 @@ public class PlayStateHud implements Disposable{
         multNumberLabel.setText(mult + "X");
         timeLabel.setText(new Date().toString().toUpperCase()+"");
         //useForSomethingBetter.setText(new Date().toString().toUpperCase()+"");
-        compass.setRotation((float) (Math.toDegrees(k.getRotation()-Math.PI/2)+ps.getCamRotation()));
+        compass.setRotation(-(float) (Math.toDegrees(k.getRotation())+ps.getCamRotation()));
         double vel = k.getVel().distance(0,0);
 
         if (k.getSAS()){ compassSAS.setText("SAS"); }

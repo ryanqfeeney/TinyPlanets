@@ -12,11 +12,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import dev.lyze.gdxtinyvg.TinyVG;
+import dev.lyze.gdxtinyvg.TinyVGAssetLoader;
 
 import java.util.Random;
 
 public class Assets {
     public AssetManager manager = new AssetManager();
+    public AssetManager tvgManager = new AssetManager();
 
 //    public static final AssetDescriptor<TextureAtlas> klobjectAtlas =
 //            new AssetDescriptor<TextureAtlas>("spaceship.txt", TextureAtlas.class);
@@ -37,10 +40,10 @@ public class Assets {
             new AssetDescriptor<Texture>("planets/nars/nars.png", Texture.class);
 
     public static final AssetDescriptor<Texture> mun =
-        new AssetDescriptor<Texture>("planets/kerbin/mun.png", Texture.class);
+        new AssetDescriptor<Texture>("planets/kerbin/mun/mun.png", Texture.class);
 
     public static final AssetDescriptor<Texture> minmus =
-        new AssetDescriptor<Texture>("planets/kerbin/mun.png", Texture.class);
+        new AssetDescriptor<Texture>("planets/kerbin/minmus/minmus.png", Texture.class);
 
     public static final AssetDescriptor<Texture> spaceship =
         new AssetDescriptor<Texture>("klobjects/spaceship.png", Texture.class);
@@ -92,12 +95,28 @@ public class Assets {
         manager.load(minmus);
         manager.load(spaceship);
         manager.load(nars);
+        manager.finishLoading();
+
+        tvgManager.setLoader(TinyVG.class, new TinyVGAssetLoader());
+
+        tvgManager.load("planets/sun.tvg", TinyVG.class);
+        tvgManager.load("planets/kerbin/kerbin.tvg", TinyVG.class);
+        tvgManager.load("planets/kerbin/mun/mun.tvg", TinyVG.class);
+        tvgManager.load("planets/kerbin/minmus/minmus.tvg", TinyVG.class);
+        tvgManager.load("planets/nars/nars.tvg", TinyVG.class);
+        tvgManager.load("planets/nars/hacobo/hacobo.tvg", TinyVG.class);
+        tvgManager.load("planets/fiji/fiji.tvg", TinyVG.class);
+
+
+        tvgManager.finishLoading();
 
     }
+
 
     public void dispose()
     {
         manager.dispose();
+        tvgManager.dispose();
     }
 
 
