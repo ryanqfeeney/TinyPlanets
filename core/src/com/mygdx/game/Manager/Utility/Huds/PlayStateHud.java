@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -19,6 +18,7 @@ import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -26,6 +26,7 @@ public class PlayStateHud implements Disposable{
 
     public Stage stage;
     private Viewport viewport;
+
     PlayState ps;
 
     int mult = 1;
@@ -41,8 +42,7 @@ public class PlayStateHud implements Disposable{
     int statusX =  20;
     int statusY = 200 ;
 
-
-
+    Calendar worldTime;
 
     double controlOrig = -220;
     double controlExitStop = 420;
@@ -221,13 +221,16 @@ public class PlayStateHud implements Disposable{
         cHeight = compass.getHeight();
 
         compass.setPosition(dashX-cWidth/2+cHeight/2+border,dashY+border);
+
+        worldTime = Calendar.getInstance();
     }
     public void update(float dt){
         Klobject k = ps.getKlobjects().get(0);
 
 
         multNumberLabel.setText(mult + "X");
-        timeLabel.setText(new Date().toString().toUpperCase()+"");
+        worldTime.add(Calendar.MILLISECOND,  (int)(mult*(1000*dt)));
+        timeLabel.setText(worldTime.getTime().toString());
         //useForSomethingBetter.setText(new Date().toString().toUpperCase()+"");
         compass.setRotation(-(float) (Math.toDegrees(k.getRotation())+ps.getCamRotation()));
         double vel = k.getVel().distance(0,0);

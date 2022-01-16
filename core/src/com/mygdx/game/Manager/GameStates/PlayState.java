@@ -143,16 +143,16 @@ public class PlayState extends GameState {
 
 
         for (Cbody cb : planets) {
-            drawPlanet(cb);
-            //drawTvg(cb, getViewport());
+            //drawPlanet(cb);
+            drawTvg(cb, getViewport());
         }
         for (Klobject cb : klobjects){
             drawKlob(cb);
         }
 
-        for (Cbody cb : planets) {
-            //drawSurface(cb);
-        }
+//        for (Cbody cb : planets) {
+//            drawSurface(cb);
+//        }
 
         hud.draw(batch);
     }

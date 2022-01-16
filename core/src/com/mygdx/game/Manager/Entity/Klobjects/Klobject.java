@@ -124,7 +124,6 @@ public class Klobject extends Cbody {
         }
 
         fade = (fade / fadeEnd);
-       // System.out.println(fade);
         if (fade > 1){
             fade = 1;
         }
@@ -149,7 +148,8 @@ public class Klobject extends Cbody {
                 path.setColor(0f, 255f, 0f, (float)fade);
             }
 
-            path.polyline(verts,fPathMin,  (float) fade);
+            path.polyline(verts, fPathMin, (float) fade);
+            //path.polyline(verts);
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
@@ -211,7 +211,7 @@ public class Klobject extends Cbody {
 //        Point2D velN = getVel().plus(new Point2D(Math.cos(getRotation()), Math.sin(getRotation()))
 //                .scale(getThrottle()));
 
-        Point2D dV = new Point2D(Math.cos(getRotation()), Math.sin(getRotation())).scale(getThrottle()).rotate(90);
+        Point2D dV = new Point2D(Math.cos(getRotation()), -Math.sin(getRotation())).scale(getThrottle()).rotate(90);
         Point2D velN = getVel().plus(dV);
         setDeltaV(getDeltaV()+dV.distance(0,0));
         setVel(velN);

@@ -132,10 +132,10 @@ public class PlayStateInputUtil implements InputProcessor {
         if (Gdx.input.isKeyPressed(Input.Keys.Q) || Gdx.input.isKeyPressed(Input.Keys.E) ) {
             if(mult == 1) {
                 Klobject klob = ps.getKlobjects().get(0);
-                if(Gdx.input.isKeyPressed(Input.Keys.Q)){
+                if(Gdx.input.isKeyPressed(Input.Keys.E)){
                     klob.setRR(klob.getRR() + klob.getDRR());
                 }
-                else if(Gdx.input.isKeyPressed(Input.Keys.E)){
+                else if(Gdx.input.isKeyPressed(Input.Keys.Q)){
                     klob.setRR(klob.getRR() - klob.getDRR());
                 }
 
@@ -291,7 +291,6 @@ public class PlayStateInputUtil implements InputProcessor {
             camera.unproject(input);
 
             for (int i = 0; i < ps.getPlanets().size(); i++){
-                System.out.println(ps.getPlanets().get(i));
                 if(   //ps.getPlanets().get(i).getSprite().getBoundingRectangle().contains(input.x,input.y) ||
                         ps.getPlanets().get(i).getTvg().isInBoundingBox(new Vector2(input.x,input.y)) ||
                         checkCircleClick(input.x,input.y,ps.getPlanets().get(i))) {
