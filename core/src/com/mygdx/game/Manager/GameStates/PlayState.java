@@ -88,6 +88,8 @@ public class PlayState extends GameState {
         int numOfKlobs = 1;
         //klobjects.add(returnOrbitingKlob(planets.get((int)(Math.random() * planets.size())), true,true));
         klobjects.add(returnOrbitingKlob(planets.get(2), true,true));
+
+
         for (int i = 1; i < numOfKlobs; i++){
             int q = (int) (Math.random() * planets.size()) ;
             Klobject k = returnOrbitingKlob(planets.get(q), false,true);

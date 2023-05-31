@@ -125,6 +125,11 @@ public class PathKlob extends Klobject{
         }
     }
 
+
+    public void drawVector() {
+
+    }
+
     @Override
     public void updateChildren(double ddx, double ddy) {
 

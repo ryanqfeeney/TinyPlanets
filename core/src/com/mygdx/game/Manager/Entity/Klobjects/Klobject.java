@@ -118,6 +118,9 @@ public class Klobject extends Cbody {
         if(null == path) return;
         double fadeStart = fStart;
         double fadeEnd =   fEnd;
+        System.out.println(getRotation());
+        float noseX = (float)((Math.cos(-getRotation()+Math.PI/2) * 100f));
+        float noseY = (float)((Math.sin(-getRotation()+Math.PI/2) * 100f));
         double fade = ps.getScale()-fadeStart;
         if (fade < 0){
             return;
@@ -134,6 +137,10 @@ public class Klobject extends Cbody {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         path.setProjectionMatrix(ps.getCamera().combined);
         path.begin(ShapeRenderer.ShapeType.Line);
+
+        path.setColor(255f, 0f, 0f, .5f);
+        path.line((float)((getX()-ps.getCamX())/scale),(float)((getY()-ps.getCamY())/scale), noseX, noseY);
+
         escapePath = false;
         try {
             int vertsSize = 2500;
@@ -153,6 +160,8 @@ public class Klobject extends Cbody {
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
+        // Calculate the coordinates of the ship's nose
+
         path.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
         if(escapePath){
@@ -160,6 +169,7 @@ public class Klobject extends Cbody {
                 pathKlob.drawPath();
             }
         }
+
     }
 
     @Override
@@ -212,6 +222,8 @@ public class Klobject extends Cbody {
 //                .scale(getThrottle()));
 
         Point2D dV = new Point2D(Math.cos(getRotation()), -Math.sin(getRotation())).scale(getThrottle()).rotate(90);
+        Point2D dV2 = new Point2D(Math.cos(getRotation()), -Math.sin(getRotation()));
+        System.out.println("DV: " + dV2);
         Point2D velN = getVel().plus(dV);
         setDeltaV(getDeltaV()+dV.distance(0,0));
         setVel(velN);

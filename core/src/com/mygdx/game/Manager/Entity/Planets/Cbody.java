@@ -102,7 +102,7 @@ public class Cbody{
         getTvg().setSize((float)(getRadius()/ps.getScale()),(float)(getRadius()/ps.getScale()));
 
         sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
-        sprite.setRotation(-(float)rotation);
+        sprite.setRotation((float)rotation);
 
         fixStartAnom();
         rr = (semiA*(1-(ecc*ecc))) / (1 + (ecc * Math.cos(startAnom)));
