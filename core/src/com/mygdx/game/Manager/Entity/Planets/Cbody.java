@@ -150,18 +150,24 @@ public class Cbody{
     }
 
 
-    public void rotate(float dt){
-        if (rotateRate!=0) {
-            sprite.rotate(-(float) ((rotateRate * dt * MULTIPLIER) % 360));
+    public void rotate(float dt) {
+        if (rotateRate != 0) {
+            // Get current rotation and add new rotation
+            float currentRotation = sprite.getRotation();
+            float deltaRotation = -(float)(rotateRate * dt * MULTIPLIER);
+            float newRotation = ((currentRotation + deltaRotation) % 360 + 360) % 360;  // Normalize to 0-360
+            
+            // Set the normalized rotation
+            sprite.setRotation(newRotation);
+            
             if(null != getTvg()) {
-                getTvg().setRotation(getTvg().getRotation() + ((float) ((rotateRate * dt * MULTIPLIER) % 360)));
+                float tvgRotation = ((getTvg().getRotation() + deltaRotation) % 360 + 360) % 360;
+                getTvg().setRotation(tvgRotation);
             }
-
         }
-        rotation = Math.toRadians(-sprite.getRotation())%(2*Math.PI);
-
-
-
+        
+        // Convert to radians (already normalized by the modulo)
+        rotation = Math.toRadians(-sprite.getRotation());
     }
 
     public void move(float dt){

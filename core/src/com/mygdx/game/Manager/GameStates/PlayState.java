@@ -87,12 +87,12 @@ public class PlayState extends GameState {
 
         int numOfKlobs = 1;
         //klobjects.add(returnOrbitingKlob(planets.get((int)(Math.random() * planets.size())), true,true));
-        klobjects.add(returnOrbitingKlob(planets.get(2), true,true));
+        klobjects.add(returnStaticOrbitingKlob(planets.get(2), true,true));
 
 
         for (int i = 1; i < numOfKlobs; i++){
             int q = (int) (Math.random() * planets.size()) ;
-            Klobject k = returnOrbitingKlob(planets.get(q), false,true);
+            Klobject k = returnRandomOrbitingKlob(planets.get(q), false,true);
             klobjects.add(k);
         }
 
@@ -264,7 +264,7 @@ public class PlayState extends GameState {
         return bCamera;
     }
 
-    public Klobject returnOrbitingKlob(Cbody parent, boolean pathBool, boolean circleBool){
+    public Klobject returnRandomOrbitingKlob(Cbody parent, boolean pathBool, boolean circleBool){
 
         Klobject k = new Klobject();
         Random random = new Random();
@@ -287,6 +287,25 @@ public class PlayState extends GameState {
 
         } while (k.getPeri() < parent.getRadius() || k.getApoap() > parent.getSoir() || k.getApoap() < 0 );
         return  k;
+    }
+
+    public Klobject returnStaticOrbitingKlob(Cbody parent, boolean pathBool, boolean circleBool) {
+        // Static initial conditions
+        double ang = 0.0;        // Start at 3 o'clock position (right)
+        double rote = 73.0;      // Point ship left
+        double dist = parent.getRadius() * 2;  // Fixed distance from parent
+        
+        // Calculate appropriate orbital velocity
+        double eVel = calculateEscapteVel(parent, dist);
+        double vel = 0.7 * eVel;  // 70% of escape velocity for stable orbit
+        double rr = 0.0;          // No rotation rate
+
+        // Create Klobject with static values
+        Klobject k = new Klobject(parent, this, rote, ang, dist, vel, rr, pathBool, circleBool);
+        
+
+        
+        return k;
     }
 
     public double getCamX(){return camX;}

@@ -224,15 +224,24 @@ public class Klobject extends Cbody {
         Point2D dV = new Point2D(Math.cos(thrustAngle), Math.sin(thrustAngle))
                      .scale(getThrottle());
         
-        // Debug logging
-        // System.out.println("Sprite rotation (degrees): " + sprite.getRotation());
-        // System.out.println("Physics rotation (radians): " + getRotation());
-        // System.out.println("Thrust angle (radians): " + thrustAngle);
-        // System.out.println("Thrust vector: " + dV);
-        // System.out.println("Current velocity: " + getVel());
-        // System.out.println("New velocity: " + getVel().plus(dV));
-        // System.out.println("Sprite rotation: " + sprite.getRotation() + " Physics rotation: " + getRotation());
-        // System.out.println("");
+        System.out.println("\n=== Ship State ===");
+        System.out.println("Sprite Rotation:");
+        System.out.println("  Degrees: " + sprite.getRotation() + "° (0° = up, 90° = left, 180° = down, 270° = right)");
+        
+        System.out.println("\nThrust Calculation:");
+        System.out.println("  Base angle: " + sprite.getRotation() + "°");
+        System.out.println("  Thrust angle: " + (sprite.getRotation() + 90) + "° (base + 90°)");
+        System.out.println("  In radians: " + thrustAngle);
+        System.out.println("  Thrust components:");
+        System.out.println("    cos: " + Math.cos(thrustAngle) + " (x direction)");
+        System.out.println("    sin: " + Math.sin(thrustAngle) + " (y direction)");
+        System.out.println("  Throttle: " + getThrottle());
+        System.out.println("  Final thrust vector: " + dV + " (should be opposite to facing direction)");
+        
+        System.out.println("\nVelocity:");
+        System.out.println("  Before thrust: " + getVel());
+        System.out.println("  After thrust: " + getVel().plus(dV));
+        System.out.println("=========================\n");
         
         Point2D velN = getVel().plus(dV);
         setDeltaV(getDeltaV()+dV.distance(0,0));
