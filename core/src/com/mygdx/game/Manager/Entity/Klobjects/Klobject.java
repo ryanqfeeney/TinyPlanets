@@ -66,6 +66,7 @@ public class Klobject extends Cbody {
         sprite.setScale(1f/ps.getScale());
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2);
         sprite.setRotation((float)rotation);
+        
         bake();
 
     }
@@ -118,7 +119,6 @@ public class Klobject extends Cbody {
         if(null == path) return;
         double fadeStart = fStart;
         double fadeEnd =   fEnd;
-        System.out.println(getRotation());
         float noseX = (float)((Math.cos(-getRotation()+Math.PI/2) * 100f));
         float noseY = (float)((Math.sin(-getRotation()+Math.PI/2) * 100f));
         double fade = ps.getScale()-fadeStart;
@@ -174,6 +174,7 @@ public class Klobject extends Cbody {
 
     @Override
     public void update(float dt) {
+        
         if (firstUpdate || (MULTIPLIER == 1 && getThrottle() > 0)) {
             try {
                 oneXupdate(dt);
@@ -218,12 +219,21 @@ public class Klobject extends Cbody {
 
     int timesLooped = 100 ;
     private void oneXupdate(float dt) {
-//        Point2D velN = getVel().plus(new Point2D(Math.cos(getRotation()), Math.sin(getRotation()))
-//                .scale(getThrottle()));
-
-        Point2D dV = new Point2D(Math.cos(getRotation()), -Math.sin(getRotation())).scale(getThrottle()).rotate(90);
-        Point2D dV2 = new Point2D(Math.cos(getRotation()), -Math.sin(getRotation()));
-        System.out.println("DV: " + dV2);
+        // Convert sprite rotation to radians and adjust by 90 degrees
+        double thrustAngle = Math.toRadians(sprite.getRotation() + 90);
+        Point2D dV = new Point2D(Math.cos(thrustAngle), Math.sin(thrustAngle))
+                     .scale(getThrottle());
+        
+        // Debug logging
+        // System.out.println("Sprite rotation (degrees): " + sprite.getRotation());
+        // System.out.println("Physics rotation (radians): " + getRotation());
+        // System.out.println("Thrust angle (radians): " + thrustAngle);
+        // System.out.println("Thrust vector: " + dV);
+        // System.out.println("Current velocity: " + getVel());
+        // System.out.println("New velocity: " + getVel().plus(dV));
+        // System.out.println("Sprite rotation: " + sprite.getRotation() + " Physics rotation: " + getRotation());
+        // System.out.println("");
+        
         Point2D velN = getVel().plus(dV);
         setDeltaV(getDeltaV()+dV.distance(0,0));
         setVel(velN);

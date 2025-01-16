@@ -825,7 +825,6 @@ public class Cbody{
 
     public double crossProd(Point2D a, Point2D b){
         double cp =  a.x()*b.y() - a.y()*b.x();
-        System.out.println(cp);
         return cp;
     }
 
