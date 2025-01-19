@@ -4,7 +4,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
+import com.mygdx.game.Manager.Utility.Colors;
 import dev.lyze.gdxtinyvg.TinyVG;
+
+
 
 public class Minmus extends Cbody {
     public Minmus(Cbody pBody, PlayState ps){
@@ -23,7 +26,7 @@ public class Minmus extends Cbody {
         soir = 2_247_428.4;
         w = Math.PI / 4.0;
         startAnom = 0;
-        cirCol = new int[]{119,130,118};
+        cirCol = Colors.colorToIntArray(Colors.MINMUS_CIRCLE);
         fStart = 3000;
         fEnd   = 10000;
         afterCall();

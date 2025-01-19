@@ -3,10 +3,12 @@ package com.mygdx.game.Manager.Entity.Klobjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.Color;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
 import org.apache.commons.math3.analysis.function.Sinh;
+import com.mygdx.game.Manager.Utility.Colors;
 
 import java.util.ArrayList;
 
@@ -24,12 +26,10 @@ public class PathKlob extends Klobject{
         path = new ShapeRenderer();
         onPathShape = new ShapeRenderer();
 
-
-        cirCol = new int[]{255,0,0};
+        cirCol = Colors.colorToIntArray(Colors.PATHKLOB_CIRCLE);
         this.ps = parentPath.getPS();
 
         path.setProjectionMatrix(ps.getCamera().combined);
-
 
         state = new State();
         fStart = pp.fStart;
@@ -111,7 +111,8 @@ public class PathKlob extends Klobject{
         try {
             int vertsSize = 2500;
             float[] verts = getVerts(vertsSize,0); //May not return the same size array if a point exits the soir
-            path.setColor(133f / 256f, 36f / 256f, 201f / 256f, (float) fade);  //
+            Color pathColor = Colors.PATHKLOB_PATH;
+            path.setColor(pathColor.r, pathColor.g, pathColor.b, (float) fade);
             path.polyline(verts);
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();

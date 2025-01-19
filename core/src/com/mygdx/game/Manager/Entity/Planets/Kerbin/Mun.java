@@ -1,5 +1,7 @@
 package com.mygdx.game.Manager.Entity.Planets.Kerbin;
 
+import com.mygdx.game.Manager.Utility.Colors;
+
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
@@ -24,7 +26,7 @@ public class Mun extends Cbody {
         semiB = 9_000_000.0;
         soir = 2_429_559.1;
         w = 0;
-        cirCol = new int[]{107,107,107};
+        cirCol = Colors.colorToIntArray(Colors.MUN_CIRCLE);
         fStart = 3000;
         fEnd   = 10000;
         afterCall();

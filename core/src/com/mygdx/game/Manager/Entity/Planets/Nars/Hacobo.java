@@ -6,6 +6,7 @@ import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import dev.lyze.gdxtinyvg.TinyVG;
+import com.mygdx.game.Manager.Utility.Colors;
 
 
 public class Hacobo extends Cbody {
@@ -24,7 +25,7 @@ public class Hacobo extends Cbody {
         semiB = 3_200_000.0;
         soir = 1_049_598.9;
         w = 135;
-        cirCol = new int[]{56,207,33};
+        cirCol = Colors.colorToIntArray(Colors.HACOBO_CIRCLE);
         fStart = 3000;
         fEnd   = 10000;
         afterCall();

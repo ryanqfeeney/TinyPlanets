@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.Entity.Klobjects.PathKlob;
 import com.mygdx.game.Manager.GameStates.PlayState;
+import com.mygdx.game.Manager.Utility.Colors;
 
 import dev.lyze.gdxtinyvg.TinyVG;
 import dev.lyze.gdxtinyvg.drawers.TinyVGShapeDrawer;
@@ -73,8 +74,8 @@ public class Cbody{
 
 
     public Cbody(PlayState ps){
-        children = new  ArrayList<>();
-        klobs = new  ArrayList<>();
+        children = new ArrayList<>();
+        klobs = new ArrayList<>();
         circleSize = 9f;
         MULTIPLIER = 1;
         rotateRate = 0;
@@ -86,10 +87,10 @@ public class Cbody{
 
         path.setProjectionMatrix(ps.getCamera().combined);
         surface.setProjectionMatrix(ps.getCamera().combined);
-        cirCol = new int[]{255,0,0};
+        cirCol = Colors.colorToIntArray(Colors.CBODY_DEFAULT_CIRCLE);
         state = new State();
-        fPathMax = .8f;
-        fCirleMax = .75f;
+        fPathMax = Colors.CBODY_PATH_MAX_FADE;
+        fCirleMax = Colors.CBODY_CIRCLE_MAX_FADE;
         this.ps = ps;
     }
 
@@ -698,7 +699,7 @@ public class Cbody{
 
         path.setProjectionMatrix(ps.getCamera().combined);
         path.begin(ShapeRenderer.ShapeType.Line);
-        path.setColor(255f/255, 255f/255, 255f/255, (float)fade );
+        path.setColor(Colors.CBODY_PATH.r, Colors.CBODY_PATH.g, Colors.CBODY_PATH.b, (float)fade);
 
         try {
             int vertsSize = 2500;

@@ -59,12 +59,10 @@ public class Assets {
                 // Set the pixel colour of the image n.b. x = cc, y = rc
                 int i = new Random().nextInt(10000);
                 if (i <= 1) {
-                    //bg.setColor(Color.WHITE);
-                    bg.setColor(1f,1f,1f,.5f);
-                    //background.drawPixel(cc,rc,Color.WHITE.toIntBits());
+                    bg.setColor(Colors.BACKGROUND_STAR);
                     bg.fillCircle(cc, rc, 1);
                 }
-                //else {   //background.drawPixel(cc,rc,Color.BLACK.toIntBits());    }
+                // else background is transparent by default
             }
         }
         try {

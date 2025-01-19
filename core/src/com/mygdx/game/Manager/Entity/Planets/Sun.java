@@ -6,6 +6,7 @@ import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import dev.lyze.gdxtinyvg.TinyVG;
 import math.geom2d.Point2D;
+import com.mygdx.game.Manager.Utility.Colors;
 
 public class Sun extends Cbody{
     public Sun(PlayState ps){
@@ -23,7 +24,7 @@ public class Sun extends Cbody{
         soir = Double.MAX_VALUE;
         sprite.setSize((float)radius/ ps.getScale(),(float)radius/ps.getScale());
         sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
-        cirCol = new int[]{219,216,42};
+        cirCol = Colors.colorToIntArray(Colors.SUN_CIRCLE);
         rotateRate = 1;
 
     }

@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
+import com.mygdx.game.Manager.Utility.Colors;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -70,7 +71,7 @@ public class PlayStateHud implements Disposable{
     private Label control_toggle_cam, control_rotate_cam, control_pan_cam, control_zoom_cam, control_throttle_up, control_cut_engines,
             control_throttle_down, control_next_cbody, control_prev_cbody, control_rotate_countcw, control_rotate_cw, control_full_engines,
             control_warp_up, control_warp_down, control_drop_warp, control_jump_to, control_click_to, control_toggle_menu, control_toggle_status,
-            control_toggle_sas;
+            control_toggle_sas, control_random_orbit;
 
     private Label status_parent, status_parent_mass, status_semiA, status_semiB, status_peri, status_apoap, status_ecc,
             status_w, status_Eanom, status_Manom, status_Tanom, status_startAnom, status_tmax;
@@ -102,14 +103,14 @@ public class PlayStateHud implements Disposable{
         table.top();
         table.setFillParent(true);
 
-        multLabel = new Label("WARP", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        multNumberLabel = new Label(String.format("%06d", mult), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        multLabel = new Label("WARP", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        multNumberLabel = new Label(String.format("%06d", mult), new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
 
-        timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        topFullAltString = new Label(String.format("%06d", 20), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        topFullAltString = new Label(String.format("%06d", 20), new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
 
-        velLabel = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        actualVel = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        velLabel = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        actualVel = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
 
 
 
@@ -134,15 +135,15 @@ public class PlayStateHud implements Disposable{
         //compassTable.moveBy(padCompassRight ,padCompassBotton);
 
         //compass dash stuff
-        velLabelCopy = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        actualVelCopy = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        velLabelCopy = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        actualVelCopy = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
 
-        altLabel = new Label("ALTITUDE", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        altLabel = new Label("ALTITUDE", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
 
         double alt = ps.getKlobjects().get(0).getLoc().minus(ps.getKlobjects().get(0).getParentBody().getLoc()).distance(0,0);
-        actualAlt = new Label(String.format("%.2f",alt), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        actualAlt = new Label(String.format("%.2f",alt), new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
 
-        deltaV = new Label("dV: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        deltaV = new Label("dV: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
         compassTable.add(deltaV).padRight(15).padBottom(20);
         compassTable.row();
         compassTable.add(altLabel);
@@ -173,7 +174,7 @@ public class PlayStateHud implements Disposable{
         sasTable.bottom().left();
         sasTable.setFillParent(true);
 
-        compassSAS = new Label("", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        compassSAS = new Label("", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
         sasTable.add(compassSAS).padBottom(160).padLeft(12);
 
         //****
@@ -268,34 +269,76 @@ public class PlayStateHud implements Disposable{
 
 
     }
-    public void draw(SpriteBatch batch){
-
+    public void draw(SpriteBatch batch) {
         batch.setProjectionMatrix(getHCamera().combined);
 
+        // 1. Draw white border first
         compassBackground.setProjectionMatrix(getHCamera().combined);
         compassBackground.begin(ShapeRenderer.ShapeType.Filled);
-        try {
-            compassBackground.rect((dashX),(dashY),dashW,dashH);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            // e.printStackTrace();
-        }
-        compassBackground.setColor(100f/255f, 100f/255f, 100f/255f, 1f);
+        float borderThickness = 4f;
+        compassBackground.setColor(Colors.COMPASS_BORDER);
+        compassBackground.rect(dashX - borderThickness, 
+                             dashY - borderThickness,
+                             dashW + (2 * borderThickness),
+                             dashH + (2 * borderThickness));
         compassBackground.end();
+        
+        // 2. Draw grey background
+        compassBackground.begin(ShapeRenderer.ShapeType.Filled);
+        compassBackground.setColor(Colors.COMPASS_BACKGROUND);
+        compassBackground.rect(dashX, dashY, dashW, dashH);
+        compassBackground.end();
+        
+        // 3. Draw grid texture on top of grey background
+        ShapeRenderer gridLines = new ShapeRenderer();
+        gridLines.setProjectionMatrix(getHCamera().combined);
+        gridLines.begin(ShapeRenderer.ShapeType.Filled);
+        gridLines.setColor(Colors.COMPASS_GRID);
+        
+        float gridSpacing = 15f;
+        float lineThickness = 2f;  
+        // Horizontal grid lines
+        for(float y = dashY; y <= dashY + dashH; y += gridSpacing) {
+            gridLines.rectLine(dashX, y, dashX + dashW, y, lineThickness);
+        }
+        
+        // Vertical grid lines
+        for(float x = dashX; x <= dashX + dashW; x += gridSpacing) {
+            gridLines.rectLine(x, dashY, x, dashY + dashH, lineThickness);
+        }
+        gridLines.end();
 
+        // Draw throttle tick marks
+        ShapeRenderer tickMarks = new ShapeRenderer();
+        tickMarks.setProjectionMatrix(getHCamera().combined);
+        tickMarks.begin(ShapeRenderer.ShapeType.Filled);
+        tickMarks.setColor(Colors.THROTTLE_TICKS);
+        
+        int numTicks = 10; // Number of tick marks (0% to 100%)
+        float tickWidth = 8; // Width of each tick
+        float tickHeight = 2; // Height of each tick
+        
+        for(int i = 1; i < numTicks; i++) {  // Start at 1, end before numTicks
+            float yPos = dashY + (dashH * (i / (float)numTicks));
+            tickMarks.rect(dashW + dashX - tickWidth, yPos - tickHeight/2, tickWidth, tickHeight);
+        }
+        tickMarks.end();
+
+        // Draw throttle indicator
         throttleIndicator.begin(ShapeRenderer.ShapeType.Filled);
         try {
             Klobject k = ps.getKlobjects().get(0);
-            int side = 10;
-            throttleIndicator.rect((dashW + dashX - ((float)(side/2.0))),((float)(dashY + (dashH-side)*(k.getThrottle()/k.getMaxThrottle()))), side,side);
-            //throttleIndicator.circle((dashW + dashX ),((float)(dashY + (dashH)*(k.getThrottle()/k.getMaxThrottle()))),side);
+            int side = 14;  // Increased from 10 to 14
+            throttleIndicator.setColor(Colors.THROTTLE_INDICATOR);
+            throttleIndicator.rect((dashW + dashX - ((float)(side/2.0)) - 7),  // Moved left by 4 pixels
+                                 ((float)(dashY + (dashH-side)*(k.getThrottle()/k.getMaxThrottle()))), 
+                                 side, side);
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
-        throttleIndicator.setColor(255f/255f, 131f/255f, 0f/255f, 1f);
         throttleIndicator.end();
 
-
-
+        // Rest of drawing
         stage.draw();
         batch.begin();
         compass.draw(batch);
@@ -381,17 +424,17 @@ public class PlayStateHud implements Disposable{
     }
 
     public void setStatusLabels(Table statusTable){
-        status_parent        = new Label("Parent: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        status_parent_mass   = new Label("Parent Mass: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        status_semiA         = new Label("Semi Major: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        status_semiB         = new Label("Semi Minor: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        status_peri          = new Label("Periapsis: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        status_apoap         = new Label("Apoapsis: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        status_ecc           = new Label("Eccentricity: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        status_parent        = new Label("Parent: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        status_parent_mass   = new Label("Parent Mass: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        status_semiA         = new Label("Semi Major: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        status_semiB         = new Label("Semi Minor: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        status_peri          = new Label("Periapsis: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        status_apoap         = new Label("Apoapsis: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        status_ecc           = new Label("Eccentricity: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
         //status_w             = new Label("Pan Camera: RMB", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        status_Tanom         = new Label("True Anomaly: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        status_Eanom         = new Label("Eccentric Anomaly: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        status_Manom         = new Label("Mean Anomaly: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        status_Tanom         = new Label("True Anomaly: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        status_Eanom         = new Label("Eccentric Anomaly: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        status_Manom         = new Label("Mean Anomaly: ", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
         //status_startAnom     = new Label("Pan Camera: RMB", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         //status_tmax          = new Label("Pan Camera: RMB", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
@@ -417,26 +460,28 @@ public class PlayStateHud implements Disposable{
     }
 
     public void setControlLabels(Table controlTable){
-        control_pan_cam        = new Label("Pan Camera: RMB", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_rotate_cam     = new Label("Rotate Camera: Alt + RMB\nRotate Camera: Arrow Keys", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_zoom_cam       = new Label("Zoom Camera: Scroll Wheel", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_throttle_up    = new Label("Throttle Up: Shift", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_throttle_down  = new Label("Throttle Down: Ctrl", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_full_engines    = new Label("Full Throttle: Z", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_cut_engines    = new Label("Cut Throttle: X", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_next_cbody     = new Label("Next C-Body:  +", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_prev_cbody     = new Label("Prev C-Cbody: -", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_rotate_countcw = new Label("Rotate CCW: Q", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_rotate_cw      = new Label("Rotate  CW: E", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_warp_up        = new Label("Warp Up: >", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_warp_down      = new Label("Warp Down: <", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_drop_warp      = new Label("Drop Out of Warp: /", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_jump_to        = new Label("Jump to Player: 1", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_click_to       = new Label("Click any C-Body to Lock", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_toggle_cam     = new Label("Toggle Camera Lock: C", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_toggle_menu    = new Label("Toggle Control Menu: M", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_toggle_status    = new Label("Toggle Orbital Menu: O", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        control_toggle_sas    = new Label("Toggle Stability Assist: T", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        control_pan_cam        = new Label("Pan Camera: RMB", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_rotate_cam     = new Label("Rotate Camera: Alt + RMB\nRotate Camera: Arrow Keys", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_zoom_cam       = new Label("Zoom Camera: Scroll Wheel", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_throttle_up    = new Label("Throttle Up: Shift", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_throttle_down  = new Label("Throttle Down: Ctrl", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_full_engines    = new Label("Full Throttle: Z", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_cut_engines    = new Label("Cut Throttle: X", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_next_cbody     = new Label("Next C-Body:  +", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_prev_cbody     = new Label("Prev C-Cbody: -", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_rotate_countcw = new Label("Rotate CCW: Q", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_rotate_cw      = new Label("Rotate  CW: E", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_warp_up        = new Label("Warp Up: >", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_warp_down      = new Label("Warp Down: <", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_drop_warp      = new Label("Drop Out of Warp: /", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_jump_to        = new Label("Jump to Player: 1", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_click_to       = new Label("Click any C-Body to Lock", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_toggle_cam     = new Label("Toggle Camera Lock: C", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_toggle_menu    = new Label("Toggle Control Menu: M", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_toggle_status    = new Label("Toggle Orbital Menu: O", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_toggle_sas    = new Label("Toggle Stability Assist: T", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        control_random_orbit   = new Label("Random Orbit: Ctrl + Alt + Q", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+
 
         controlTable.add(control_pan_cam ).expandX().left().row();
         controlTable.add(control_rotate_cam).expandX().left().row();
@@ -458,6 +503,8 @@ public class PlayStateHud implements Disposable{
         controlTable.add(control_click_to ).expandX().left().row();
         controlTable.add(control_toggle_status).expandX().left().row();
         controlTable.add(control_toggle_menu).expandX().left().row();
+        controlTable.add(control_random_orbit).expandX().left().row();
+   
 
         controlTable.moveBy(controlX,controlY);
 

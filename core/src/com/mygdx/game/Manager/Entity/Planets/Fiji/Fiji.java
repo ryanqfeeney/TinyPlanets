@@ -5,6 +5,7 @@ import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import dev.lyze.gdxtinyvg.TinyVG;
+import com.mygdx.game.Manager.Utility.Colors;
 
 public class Fiji extends Cbody {
     public Fiji(Cbody pBody, PlayState ps){
@@ -23,7 +24,7 @@ public class Fiji extends Cbody {
         w = 0;
         startAnom = Math.toRadians(-97);
         soir = 85_109_365.0;
-        cirCol = new int[]{82,9,117};
+        cirCol = Colors.colorToIntArray(Colors.FIJI_CIRCLE);
         fStart = 200000;
         fEnd   = 2000000;
         afterCall();

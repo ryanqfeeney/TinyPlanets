@@ -359,6 +359,13 @@ public class PlayStateInputUtil implements InputProcessor {
             }
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && 
+            Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) && 
+            Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
+            // Only trigger for first Klobject (player ship)
+            ps.getKlobjects().get(0).randomizeOrbit();
+        }
+
     }
     public boolean checkCircleClick(float x, float y, Cbody klob){
         Point2D click = new Point2D(x,y);

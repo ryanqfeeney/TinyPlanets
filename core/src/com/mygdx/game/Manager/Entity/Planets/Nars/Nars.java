@@ -8,6 +8,7 @@ import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import dev.lyze.gdxtinyvg.TinyVG;
+import com.mygdx.game.Manager.Utility.Colors;
 
 public class Nars extends Cbody {
     public Nars(Cbody pBody, PlayState ps) {
@@ -26,7 +27,7 @@ public class Nars extends Cbody {
         w = 0;
         startAnom = Math.toRadians(Cbody.testROT);
         soir = 47_921_949.0;
-        cirCol = new int[]{173, 74, 11};
+        cirCol = Colors.colorToIntArray(Colors.NARS_CIRCLE);
         fStart = 15000;
         fEnd =   200000;
         afterCall();

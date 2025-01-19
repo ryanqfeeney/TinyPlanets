@@ -5,6 +5,7 @@ import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import dev.lyze.gdxtinyvg.TinyVG;
+import com.mygdx.game.Manager.Utility.Colors;
 
 public class Kerbin extends Cbody {
     public Kerbin(Cbody pBody, PlayState ps){
@@ -23,7 +24,7 @@ public class Kerbin extends Cbody {
         w = 0;
         startAnom = Math.toRadians(150);
         soir = 84_159_286.0;
-        cirCol = new int[]{0,30,255};
+        cirCol = Colors.colorToIntArray(Colors.KERBIN_CIRCLE);
         fStart = 200000;
         fEnd   = 2000000;
         rotation = 0;

@@ -1,4 +1,6 @@
 package com.mygdx.game.Manager.Entity.Klobjects;
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -6,14 +8,16 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.game.Manager.Entity.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
+import com.mygdx.game.Manager.Utility.Colors;
 import math.geom2d.Point2D;
+import com.badlogic.gdx.graphics.Color;
 
 
 
 public class Klobject extends Cbody {
     float drr = .6f;
 
-    double dThr = 4 / 3000.0; // smaller for slower movement speed
+    double dThr = 4 / 300.0; // smaller for slower movement speed
     double throttle = 0;
     double maxThrottle = 1.2;//Good max is 1
 
@@ -119,8 +123,6 @@ public class Klobject extends Cbody {
         if(null == path) return;
         double fadeStart = fStart;
         double fadeEnd =   fEnd;
-        float noseX = (float)((Math.cos(-getRotation()+Math.PI/2) * 100f));
-        float noseY = (float)((Math.sin(-getRotation()+Math.PI/2) * 100f));
         double fade = ps.getScale()-fadeStart;
         if (fade < 0){
             return;
@@ -138,29 +140,27 @@ public class Klobject extends Cbody {
         path.setProjectionMatrix(ps.getCamera().combined);
         path.begin(ShapeRenderer.ShapeType.Line);
 
-        path.setColor(255f, 0f, 0f, .5f);
-        path.line((float)((getX()-ps.getCamX())/scale),(float)((getY()-ps.getCamY())/scale), noseX, noseY);
-
         escapePath = false;
         try {
             int vertsSize = 2500;
-            float[] verts = getVerts(vertsSize,0); //May not return the same size array if a point exits the soir
+            float[] verts = getVerts(vertsSize,0);
+            Color pathColor;
+            
             if (ecc > 1 || (!escapePath && peri < parentBody.getRadius()/2)){
-                path.setColor(255f, 0f, 0f, (float)fade);
+                pathColor = Colors.PATH_DANGEROUS;
             }
             else if (escapePath){
-                path.setColor(255f / 256f, 170f / 256f, 3f / 256f, (float) fade);
+                pathColor = Colors.PATH_ESCAPE;
             }
             else{
-                path.setColor(0f, 255f, 0f, (float)fade);
+                pathColor = Colors.PATH_NORMAL;
             }
-
+            
+            path.setColor(pathColor.r, pathColor.g, pathColor.b, (float)fade);
             path.polyline(verts, fPathMin, (float) fade);
-            //path.polyline(verts);
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
-        // Calculate the coordinates of the ship's nose
 
         path.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -169,7 +169,6 @@ public class Klobject extends Cbody {
                 pathKlob.drawPath();
             }
         }
-
     }
 
     @Override
@@ -367,6 +366,48 @@ public class Klobject extends Cbody {
     public void setParentBody(Cbody parentBody) {
         this.parentBody = parentBody;
     }
-
+    
+    public void randomizeOrbit() {
+        // Reset thrust
+        setThrottle(0);
+        
+        // Get all possible parent bodies
+        ArrayList<Cbody> possibleParents = new ArrayList<>();
+        possibleParents.addAll(ps.getPlanets());
+        
+        // Pick random new parent
+        int randomIndex = (int)(Math.random() * possibleParents.size());
+        Cbody newParent = possibleParents.get(randomIndex);
+        
+        // Random orbit parameters
+        double randomDist = newParent.getRadius() * (2 + Math.random() * 8);  // Between 2-10 radii out
+        double randomAng = Math.random() * 360;  // Random orientation
+        double randomRot = Math.random() * 360;  // Random rotation
+        
+        // Calculate velocities
+        double circularVel = Math.sqrt((gravConstant * newParent.getMass()) / randomDist);  // Circular orbit velocity
+        double escapeVel = Math.sqrt(2 * gravConstant * newParent.getMass() / randomDist);  // Escape velocity at this distance
+        
+        // Random velocity between 70% of circular and 90% of escape velocity
+        double minVel = circularVel * 0.7;  // 70% of circular velocity
+        double maxVel = escapeVel * 0.9;    // 90% of escape velocity
+        double randomVel = minVel + (Math.random() * (maxVel - minVel));
+        
+        // Apply new orbit
+        setParentBody(newParent);
+        rotation = randomRot;
+        sprite.setRotation((float)randomRot);
+        
+        // Set new position and velocity
+        double rote = Math.toRadians(randomAng);
+        state.pos = new Point2D(newParent.getX() + Math.cos(rote) * randomDist,
+                               newParent.getY() + Math.sin(rote) * randomDist);
+        
+        state.vel = new Point2D(-Math.sin(rote) * randomVel,
+                               Math.cos(rote) * randomVel);
+        
+        // Recalculate orbital parameters
+        bake();
+    }
 
 }
