@@ -11,6 +11,8 @@ import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.Entity.Klobjects.PathKlob;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Colors;
+import com.mygdx.game.Manager.Utility.RenderManagers.CbodyRenderManager;
+import com.badlogic.gdx.graphics.Color;
 
 import dev.lyze.gdxtinyvg.TinyVG;
 import dev.lyze.gdxtinyvg.drawers.TinyVGShapeDrawer;
@@ -58,17 +60,14 @@ public class Cbody{
 
     protected PlayState ps;
 
-    protected ShapeRenderer path;
-    protected ShapeRenderer onPathShape;
-    protected ShapeRenderer surface;
-
-
-
     protected PathKlob pathKlob;
     protected boolean escapePath;
     public float scale, circleSize, fStart, fEnd, fPathMax, fCirleMax;
     protected int[] cirCol;
     protected float[][] sVertices;
+
+    protected boolean shouldRenderCircle = true;
+    protected boolean shouldRenderPath = true;
 
 
 
@@ -81,16 +80,10 @@ public class Cbody{
         rotateRate = 0;
         w = 0;
         soir = 0; //sphere of influence radiance
-        path = new ShapeRenderer();
-        onPathShape = new ShapeRenderer();
-        surface = new ShapeRenderer();
-
-        path.setProjectionMatrix(ps.getCamera().combined);
-        surface.setProjectionMatrix(ps.getCamera().combined);
-        cirCol = Colors.colorToIntArray(Colors.CBODY_DEFAULT_CIRCLE);
         state = new State();
         fPathMax = Colors.CBODY_PATH_MAX_FADE;
         fCirleMax = Colors.CBODY_CIRCLE_MAX_FADE;
+        cirCol = Colors.colorToIntArray(Colors.CBODY_CIRCLE);  // Initialize cirCol
         this.ps = ps;
     }
 
@@ -678,63 +671,39 @@ public class Cbody{
     }
 
     public void drawPath() {
+        if(!shouldRenderPath) return;
+        double fade = ps.getScale()-fStart;
+        if (fade < 0) return;
 
-        double fadeStart = fStart;
-        double fadeEnd =   fEnd;
+        fade = (fade / fEnd);
+        if (fade > 1) fade = 1;
+        fade *= fPathMax;
 
-        double fade = ps.getScale()-fadeStart;
-        if (fade < 0){
-            return;
-        }
-
-        fade = (fade / fadeEnd);
-        if (fade > 1){
-            fade = 1;
-        }
-
-        fade*=fPathMax;
-
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        path.setProjectionMatrix(ps.getCamera().combined);
-        path.begin(ShapeRenderer.ShapeType.Line);
-        path.setColor(Colors.CBODY_PATH.r, Colors.CBODY_PATH.g, Colors.CBODY_PATH.b, (float)fade);
-
+        CbodyRenderManager.get().beginPath(ps);
         try {
             int vertsSize = 2500;
-            float[] verts = getVerts(vertsSize, 0); //May not return the same size array if a point exits the soir
-            path.polyline(verts);
+            float[] verts = getVerts(vertsSize, 0);
+            CbodyRenderManager.get().drawPath(verts, Colors.CBODY_PATH, (float)fade);
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
-
-        path.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
-
+        CbodyRenderManager.get().endPath();
     }
 
-    public void drawCircle(){
-        if(null == onPathShape ) return;
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        onPathShape.setProjectionMatrix(ps.getCamera().combined);
-        onPathShape.begin(ShapeRenderer.ShapeType.Filled);
-        try{
-            onPathShape.circle((float)((getX()-ps.getCamX())/scale),(float)((getY()-ps.getCamY())/scale),circleSize);
+    public void drawCircle() {
+        if(!shouldRenderCircle) return;
+        float x = (float)((getX()-ps.getCamX())/scale);
+        float y = (float)((getY()-ps.getCamY())/scale);
+        Color color = new Color(cirCol[0]/256f, cirCol[1]/256f, cirCol[2]/256f, 1);
+        CbodyRenderManager.get().drawCircle(ps, x, y, circleSize, color, fCirleMax);
+    }
+
+    public void draw() {
+        if (sprite != null) {
+            CbodyRenderManager.get().drawSprite(ps, sprite, (float)getX(), (float)getY());
         }
-        catch (Exception e){
-            System.out.println(e);
-        }
-        onPathShape.setColor(cirCol[0]/256f, cirCol[1]/256f, cirCol[2]/256f, fCirleMax);
-        onPathShape.end();
     }
 
-
-
-    public void dispose(){
-        path.dispose();
-    }
 
 
     public double getX(){
@@ -749,21 +718,7 @@ public class Cbody{
 
     public void setRR(double rr){ rotateRate = rr;}
 
-    public ShapeRenderer getPath() {
-        return path;
-    }
-
-    public void setPath(ShapeRenderer path) {
-        this.path = path;
-    }
-
-    public ShapeRenderer getSurface() {
-        return surface;
-    }
-
-    public void setSurface(ShapeRenderer surface) {
-        this.surface = surface;
-    }
+  
 
     public double getRadius() {
         return radius;

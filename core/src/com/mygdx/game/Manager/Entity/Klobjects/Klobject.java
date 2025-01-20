@@ -11,10 +11,13 @@ import com.mygdx.game.Manager.Utility.Assets;
 import com.mygdx.game.Manager.Utility.Colors;
 import math.geom2d.Point2D;
 import com.badlogic.gdx.graphics.Color;
+import com.mygdx.game.Manager.Utility.RenderManagers.KlobjectRenderManager;
 
 
 
 public class Klobject extends Cbody {
+    protected boolean shouldRenderPath = true;
+    protected boolean shouldRenderCircle = true;
     float drr = .6f;
 
     double dThr = 4 / 300.0; // smaller for slower movement speed
@@ -62,7 +65,6 @@ public class Klobject extends Cbody {
                 Math.cos(rote) * vel);
 
 
-        onPathShape = new ShapeRenderer();
         pathKlob = new PathKlob(this);
 
 
@@ -93,10 +95,10 @@ public class Klobject extends Cbody {
                 Math.cos(rote) * vel);
 
         if (!pathBool) {
-            path = null;
+            shouldRenderPath = false;
         }
         if (!circleBool) {
-            onPathShape = null;
+            shouldRenderCircle = false;
         }
 
 
@@ -120,54 +122,24 @@ public class Klobject extends Cbody {
 
     @Override
     public void drawPath() {
-        if(null == path) return;
-        double fadeStart = fStart;
-        double fadeEnd =   fEnd;
-        double fade = ps.getScale()-fadeStart;
-        if (fade < 0){
-            return;
-        }
-
-        fade = (fade / fadeEnd);
-        if (fade > 1){
-            fade = 1;
-        }
-
-        fade *= fPathMax;
-
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        path.setProjectionMatrix(ps.getCamera().combined);
-        path.begin(ShapeRenderer.ShapeType.Line);
-
+        if(!shouldRenderPath) return;
+        double fade = calculateFade();
+        
+        KlobjectRenderManager.get().beginPath(ps);
         escapePath = false;
         try {
             int vertsSize = 2500;
             float[] verts = getVerts(vertsSize,0);
-            Color pathColor;
+            Color pathColor = determinePathColor();
             
-            if (ecc > 1 || (!escapePath && peri < parentBody.getRadius()/2)){
-                pathColor = Colors.PATH_DANGEROUS;
-            }
-            else if (escapePath){
-                pathColor = Colors.PATH_ESCAPE;
-            }
-            else{
-                pathColor = Colors.PATH_NORMAL;
-            }
-            
-            path.setColor(pathColor.r, pathColor.g, pathColor.b, (float)fade);
-            path.polyline(verts, fPathMin, (float) fade);
+            KlobjectRenderManager.get().drawPath(verts, pathColor, fade, fPathMin);
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
+        KlobjectRenderManager.get().endPath();
 
-        path.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
-        if(escapePath){
-            if (pathKlob != null ) {
-                pathKlob.drawPath();
-            }
+        if(escapePath && pathKlob != null) {
+            pathKlob.drawPath();
         }
     }
 
@@ -281,9 +253,6 @@ public class Klobject extends Cbody {
         return name;
     }
 
-    //public Sprite getKlobSprite() {
-        //return klobSprite;
-    //}
 
 
     public void setMultiplier(double mult) {
@@ -294,10 +263,6 @@ public class Klobject extends Cbody {
 
     public Point2D getLoc() {
         return state.pos;
-    }
-
-    public ShapeRenderer getOnPathShape(){
-        return onPathShape;
     }
 
     public double getDRR() {return drr;}
@@ -410,4 +375,24 @@ public class Klobject extends Cbody {
         bake();
     }
 
+    @Override
+    public void draw() {
+        if (sprite != null) {
+            KlobjectRenderManager.get().drawSprite(ps, sprite, (float)getX(), (float)getY());
+        }
+    }
+
+    private double calculateFade() {
+        double fade = ps.getScale() - fStart;
+        if (fade < 0) return 0;
+        fade = (fade / fEnd);
+        if (fade > 1) fade = 1;
+        return fade * fPathMax;
+    }
+
+    private Color determinePathColor() {
+        return (ecc > 1 || (!escapePath && peri < parentBody.getRadius()/2)) ? 
+            Colors.PATH_DANGEROUS : 
+            (escapePath ? Colors.PATH_ESCAPE : Colors.PATH_NORMAL);
+    }
 }

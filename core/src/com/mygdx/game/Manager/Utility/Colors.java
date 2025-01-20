@@ -8,7 +8,7 @@ public class Colors {
     
     // Compass Colors
     public static final Color COMPASS_BACKGROUND = new Color(60f/255f, 60f/255f, 60f/255f, 1f);
-    public static final Color COMPASS_GRID = new Color(45f/255f, 45f/255f, 45f/255f, 1f);
+    public static final Color COMPASS_GRID = new Color(0.2f, 0.2f, 0.2f, 1);
     public static final Color COMPASS_BORDER = UI_WHITE;
     
     // Throttle Colors
@@ -42,10 +42,11 @@ public class Colors {
     public static final Color CBODY_DEFAULT_CIRCLE = new Color(1f, 0f, 0f, 1f);  // Default red circle
     
     // Fade constants
-    public static final float CBODY_PATH_MAX_FADE = 0.8f;  // fPathMax
-    public static final float CBODY_CIRCLE_MAX_FADE = 0.75f;  // fCirleMax
+    public static final float CBODY_PATH_MAX_FADE = 1f;  // fPathMax
+    public static final float CBODY_CIRCLE_MAX_FADE = 1f;  // fCirleMax
     
     // Planet Circle Colors
+    public static final Color CBODY_CIRCLE = new Color(1f, 0f, 0f, 1f);
     public static final Color FIJI_CIRCLE = new Color(82f/255f, 9f/255f, 117f/255f, 1f);    // Purple
     public static final Color KERBIN_CIRCLE = new Color(0f/255f, 30f/255f, 255f/255f, 1f);  // Blue
     public static final Color MINMUS_CIRCLE = new Color(119f/255f, 130f/255f, 118f/255f, 1f); // Grey-Green
@@ -69,5 +70,7 @@ public class Colors {
             (int)(color.b * 255)
         };
     }
+
+ 
 
 } 

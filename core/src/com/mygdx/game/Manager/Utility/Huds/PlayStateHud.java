@@ -5,9 +5,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -18,6 +16,7 @@ import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import com.mygdx.game.Manager.Utility.Colors;
+import com.mygdx.game.Manager.Utility.RenderManagers.PlayStateHudRenderManager;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -77,10 +76,6 @@ public class PlayStateHud implements Disposable{
             status_w, status_Eanom, status_Manom, status_Tanom, status_startAnom, status_tmax;
 
 
-    Sprite compass;
-    ShapeRenderer compassBackground;
-    ShapeRenderer throttleIndicator;
-
     float dashX, dashY, cWidth, cHeight, dashW, dashH;
 
 
@@ -109,8 +104,8 @@ public class PlayStateHud implements Disposable{
         timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
         topFullAltString = new Label(String.format("%06d", 20), new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
 
-        velLabel = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
-        actualVel = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Colors.TEXT_DEFAULT));
+        velLabel = new Label("VELOCITY", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        actualVel = new Label(String.format("%.2f", ps.getKlobjects().get(0).getVel().distance(0,0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
 
 
@@ -201,39 +196,23 @@ public class PlayStateHud implements Disposable{
 
     }
     public void initDash(){
-        compassBackground = new ShapeRenderer();
-        throttleIndicator = new ShapeRenderer();
-
         dashW = 300;
         dashH = 150;
         dashX = 5f;
         dashY = 5f;
         int border = 15;
 
-        compass = new Sprite(ps.assets.manager.get(Assets.spaceship));
-        compass.setSize(dashH/compass.getHeight()* compass.getWidth(),dashH);
-        compass.setOrigin(compass.getWidth() / 2, compass.getHeight() / 2);
-        compass.setRotation((float) Math.toDegrees(ps.getKlobjects().get(0).getRotation()+Math.PI));
-
         dashW = 2*border+dashW;
         dashH = 2*border+dashH;
-
-        cWidth = compass.getWidth();
-        cHeight = compass.getHeight();
-
-        compass.setPosition(dashX-cWidth/2+cHeight/2+border,dashY+border);
 
         worldTime = Calendar.getInstance();
     }
     public void update(float dt){
         Klobject k = ps.getKlobjects().get(0);
 
-
         multNumberLabel.setText(mult + "X");
         worldTime.add(Calendar.MILLISECOND,  (int)(mult*(1000*dt)));
         timeLabel.setText(worldTime.getTime().toString());
-        //useForSomethingBetter.setText(new Date().toString().toUpperCase()+"");
-        compass.setRotation(-(float) (Math.toDegrees(k.getRotation())+ps.getCamRotation()));
         double vel = k.getVel().distance(0,0);
 
         if (k.getSAS()){ compassSAS.setText("SAS"); }
@@ -266,83 +245,52 @@ public class PlayStateHud implements Disposable{
     @Override
     public void dispose() {
         stage.dispose();
-
-
     }
     public void draw(SpriteBatch batch) {
+        
         batch.setProjectionMatrix(getHCamera().combined);
 
-        // 1. Draw white border first
-        compassBackground.setProjectionMatrix(getHCamera().combined);
-        compassBackground.begin(ShapeRenderer.ShapeType.Filled);
-        float borderThickness = 4f;
-        compassBackground.setColor(Colors.COMPASS_BORDER);
-        compassBackground.rect(dashX - borderThickness, 
-                             dashY - borderThickness,
-                             dashW + (2 * borderThickness),
-                             dashH + (2 * borderThickness));
-        compassBackground.end();
+        // Draw compass background and border using PlayStateHudRenderManager
+        PlayStateHudRenderManager.get().beginCompassBackground(getHCamera());
+        PlayStateHudRenderManager.get().drawCompassBackground(dashX, dashY, dashW, dashH, 4f);
+        PlayStateHudRenderManager.get().endCompassBackground();
         
-        // 2. Draw grey background
-        compassBackground.begin(ShapeRenderer.ShapeType.Filled);
-        compassBackground.setColor(Colors.COMPASS_BACKGROUND);
-        compassBackground.rect(dashX, dashY, dashW, dashH);
-        compassBackground.end();
-        
-        // 3. Draw grid texture on top of grey background
-        ShapeRenderer gridLines = new ShapeRenderer();
-        gridLines.setProjectionMatrix(getHCamera().combined);
-        gridLines.begin(ShapeRenderer.ShapeType.Filled);
-        gridLines.setColor(Colors.COMPASS_GRID);
-        
-        float gridSpacing = 15f;
-        float lineThickness = 2f;  
-        // Horizontal grid lines
-        for(float y = dashY; y <= dashY + dashH; y += gridSpacing) {
-            gridLines.rectLine(dashX, y, dashX + dashW, y, lineThickness);
-        }
-        
-        // Vertical grid lines
-        for(float x = dashX; x <= dashX + dashW; x += gridSpacing) {
-            gridLines.rectLine(x, dashY, x, dashY + dashH, lineThickness);
-        }
-        gridLines.end();
+        // Draw grid using PlayStateHudRenderManager
+        PlayStateHudRenderManager.get().beginGrid(getHCamera());
+        PlayStateHudRenderManager.get().drawGrid(dashX, dashY, dashW, dashH, 15f, 1f, Colors.COMPASS_GRID);
+        PlayStateHudRenderManager.get().endGrid();
 
-        // Draw throttle tick marks
-        ShapeRenderer tickMarks = new ShapeRenderer();
-        tickMarks.setProjectionMatrix(getHCamera().combined);
-        tickMarks.begin(ShapeRenderer.ShapeType.Filled);
-        tickMarks.setColor(Colors.THROTTLE_TICKS);
-        
-        int numTicks = 10; // Number of tick marks (0% to 100%)
-        float tickWidth = 8; // Width of each tick
-        float tickHeight = 2; // Height of each tick
-        
-        for(int i = 1; i < numTicks; i++) {  // Start at 1, end before numTicks
-            float yPos = dashY + (dashH * (i / (float)numTicks));
-            tickMarks.rect(dashW + dashX - tickWidth, yPos - tickHeight/2, tickWidth, tickHeight);
-        }
-        tickMarks.end();
+        // Draw throttle tick marks using PlayStateHudRenderManager
+        PlayStateHudRenderManager.get().beginTicks(getHCamera());
+        PlayStateHudRenderManager.get().drawTicks(dashX, dashY, dashW, dashH, 10, 8f, 2f, Colors.THROTTLE_TICKS);
+        PlayStateHudRenderManager.get().endTicks();
 
-        // Draw throttle indicator
-        throttleIndicator.begin(ShapeRenderer.ShapeType.Filled);
+        // Draw throttle indicator using PlayStateHudRenderManager
+        PlayStateHudRenderManager.get().beginThrottle(getHCamera());
         try {
             Klobject k = ps.getKlobjects().get(0);
-            int side = 14;  // Increased from 10 to 14
-            throttleIndicator.setColor(Colors.THROTTLE_INDICATOR);
-            throttleIndicator.rect((dashW + dashX - ((float)(side/2.0)) - 7),  // Moved left by 4 pixels
-                                 ((float)(dashY + (dashH-side)*(k.getThrottle()/k.getMaxThrottle()))), 
-                                 side, side);
+            int side = 14;
+            PlayStateHudRenderManager.get().drawThrottle(
+                (dashW + dashX - ((float)(side/2.0)) - 7),
+                ((float)(dashY + (dashH-side)*(k.getThrottle()/k.getMaxThrottle()))),
+                side, side,
+                Colors.THROTTLE_INDICATOR
+            );
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
-        throttleIndicator.end();
+        PlayStateHudRenderManager.get().endThrottle();
 
-        // Rest of drawing
+        // Draw compass sprite using PlayStateHudRenderManager
+        float shipRotation = (float) Math.toDegrees(ps.getKlobjects().get(0).getRotation());
+        float cameraRotation = (float) ps.getCamRotation();
+        
+        PlayStateHudRenderManager.get().drawCompass(getHCamera(), ps.assets.manager.get(Assets.spaceship), 
+            dashX, dashY, dashH, 
+            shipRotation - cameraRotation);
+
+        // Draw UI elements
         stage.draw();
-        batch.begin();
-        compass.draw(batch);
-        batch.end();
     }
 
     public void toggleControl(){

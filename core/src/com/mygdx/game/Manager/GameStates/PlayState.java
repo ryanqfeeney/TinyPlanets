@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
@@ -20,7 +19,8 @@ import com.mygdx.game.Manager.Utility.Assets;
 import com.mygdx.game.Manager.Utility.Huds.PlayStateHud;
 import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
 import dev.lyze.gdxtinyvg.drawers.TinyVGShapeDrawer;
-
+import com.mygdx.game.Manager.Utility.Colors;
+import com.mygdx.game.Manager.Utility.RenderManagers.CbodyRenderManager;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -166,14 +166,8 @@ public class PlayState extends GameState {
         super.dispose();
         batch.dispose();
         hud.dispose();
-        for (Klobject klob : klobjects){
-            klob.dispose();
-        }
 
-        for (Cbody cb : planets){
-            cb.dispose();
-        }
-
+        CbodyRenderManager.get().dispose();
     }
 
     public void drawTvg(Cbody cb, Viewport viewport) {
@@ -224,19 +218,14 @@ public class PlayState extends GameState {
         batch.end();
     }
 
-    public void drawSurface(Cbody cb){
-        if(null == cb ) return;
-//        Gdx.gl.glEnable(GL20.GL_BLEND);
-//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        cb.getSurface().setProjectionMatrix(getCamera().combined);
-        cb.getSurface().begin(ShapeRenderer.ShapeType.Line);
-
-        float rsv[][] = cb.getRelativeSVertices();
-
+    public void drawSurface(Cbody cb) {
+        if(null == cb) return;
+        CbodyRenderManager.get().beginPath(this);
+        float[][] rsv = cb.getRelativeSVertices();
         for (float[] f : rsv) {
-            cb.getSurface().polyline(f);
+            CbodyRenderManager.get().drawPath(f, Colors.CBODY_PATH, 1f);
         }
-        cb.getSurface().end();
+        CbodyRenderManager.get().endPath();
     }
 
 
@@ -310,7 +299,9 @@ public class PlayState extends GameState {
 
     public double getCamX(){return camX;}
     public double getCamY(){return camY;}
-    public double getCamRotation(){return camRote;}
+    public double getCamRotation() {
+        return camRote;
+    }
     public void setCamX(double x){camX = x;}
     public void setCamY(double y){camY = y;}
     public void setCamRote(double rr){camRote = -rr;}

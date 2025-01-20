@@ -9,6 +9,7 @@ import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
 import org.apache.commons.math3.analysis.function.Sinh;
 import com.mygdx.game.Manager.Utility.Colors;
+import com.mygdx.game.Manager.Utility.RenderManagers.KlobjectRenderManager;
 
 import java.util.ArrayList;
 
@@ -23,13 +24,8 @@ public class PathKlob extends Klobject{
         MULTIPLIER = 1;
         w = 0;
 
-        path = new ShapeRenderer();
-        onPathShape = new ShapeRenderer();
-
         cirCol = Colors.colorToIntArray(Colors.PATHKLOB_CIRCLE);
         this.ps = parentPath.getPS();
-
-        path.setProjectionMatrix(ps.getCamera().combined);
 
         state = new State();
         fStart = pp.fStart;
@@ -90,39 +86,24 @@ public class PathKlob extends Klobject{
 
     @Override
     public void drawPath() {
-        double fadeStart = fStart;
-        double fadeEnd =   fEnd;
-        double fade = ps.getScale()-fadeStart;
-        if (fade < 0){
-            return;
-        }
+        double fade = ps.getScale()-fStart;
+        if (fade < 0) return;
 
-        fade = (fade / fadeEnd);
-        if (fade > 1){
-            fade = 1;
-        }
+        fade = (fade / fEnd);
+        if (fade > 1) fade = 1;
 
-
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        path.setProjectionMatrix(ps.getCamera().combined);
-        path.begin(ShapeRenderer.ShapeType.Line);
-        escapePath = false;
+        KlobjectRenderManager.get().beginPath(ps);
         try {
             int vertsSize = 2500;
-            float[] verts = getVerts(vertsSize,0); //May not return the same size array if a point exits the soir
-            Color pathColor = Colors.PATHKLOB_PATH;
-            path.setColor(pathColor.r, pathColor.g, pathColor.b, (float) fade);
-            path.polyline(verts);
+            float[] verts = getVerts(vertsSize, 0);
+            KlobjectRenderManager.get().drawPath(verts, Colors.PATHKLOB_PATH, (float)fade, 0f);
         } catch (ArrayIndexOutOfBoundsException e) {
             // e.printStackTrace();
         }
-        path.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
-        if(escapePath){
-            if (pathKlob != null ) {
-                pathKlob.drawPath();
-            }
+        KlobjectRenderManager.get().endPath();
+        
+        if(escapePath && pathKlob != null) {
+            pathKlob.drawPath();
         }
     }
 
