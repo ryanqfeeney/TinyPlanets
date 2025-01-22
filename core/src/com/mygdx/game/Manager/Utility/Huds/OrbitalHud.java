@@ -3,7 +3,7 @@ package com.mygdx.game.Manager.Utility.Huds;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Disposable;
-import com.mygdx.game.Manager.Entity.Planets.Cbody;
+import com.mygdx.game.Manager.Entities.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Colors;
 

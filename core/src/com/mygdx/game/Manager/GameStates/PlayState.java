@@ -7,14 +7,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
-import com.mygdx.game.Manager.Entity.Planets.*;
-import com.mygdx.game.Manager.Entity.Planets.Kerbin.Kerbin;
-import com.mygdx.game.Manager.Entity.Planets.Kerbin.Minmus;
-import com.mygdx.game.Manager.Entity.Planets.Kerbin.Mun;
-import com.mygdx.game.Manager.Entity.Planets.Nars.Hacobo;
-import com.mygdx.game.Manager.Entity.Planets.Nars.Nars;
-import com.mygdx.game.Manager.Entity.Planets.Fiji.Fiji;
+import com.mygdx.game.Manager.Entities.Klobjects.Klobject;
+import com.mygdx.game.Manager.Entities.Planets.*;
+import com.mygdx.game.Manager.Entities.Planets.Fiji.Fiji;
+import com.mygdx.game.Manager.Entities.Planets.Kerbin.Kerbin;
+import com.mygdx.game.Manager.Entities.Planets.Kerbin.Minmus;
+import com.mygdx.game.Manager.Entities.Planets.Kerbin.Mun;
+import com.mygdx.game.Manager.Entities.Planets.Nars.Hacobo;
+import com.mygdx.game.Manager.Entities.Planets.Nars.Nars;
 import com.mygdx.game.Manager.Utility.Assets;
 import com.mygdx.game.Manager.Utility.Huds.PlayStateHud;
 import com.mygdx.game.Manager.Utility.PlayStateInputUtil;
@@ -22,10 +22,10 @@ import dev.lyze.gdxtinyvg.drawers.TinyVGShapeDrawer;
 import com.mygdx.game.Manager.Utility.Colors;
 import com.mygdx.game.Manager.Utility.RenderManagers.CbodyRenderManager;
 
+import static com.mygdx.game.Manager.Entities.Planets.Cbody.calculateEscapteVel;
+
 import java.util.ArrayList;
 import java.util.Random;
-
-import static com.mygdx.game.Manager.Entity.Planets.Cbody.calculateEscapteVel;
 
 public class PlayState extends GameState {
 

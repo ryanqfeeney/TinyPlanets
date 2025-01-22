@@ -1,10 +1,10 @@
-package com.mygdx.game.Manager.Entity.Planets.Kerbin;
+package com.mygdx.game.Manager.Entities.Planets.Kerbin;
 
 import com.mygdx.game.Manager.Utility.Colors;
 
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.mygdx.game.Manager.Entity.Planets.Cbody;
+import com.mygdx.game.Manager.Entities.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import dev.lyze.gdxtinyvg.TinyVG;

@@ -1,10 +1,10 @@
-package com.mygdx.game.Manager.Entity.Planets.Nars;
+package com.mygdx.game.Manager.Entities.Planets.Nars;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.mygdx.game.Manager.Entity.Planets.Cbody;
+import com.mygdx.game.Manager.Entities.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Assets;
 import dev.lyze.gdxtinyvg.TinyVG;

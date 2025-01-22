@@ -1,4 +1,4 @@
-package com.mygdx.game.Manager.Entity.Planets;
+package com.mygdx.game.Manager.Entities.Planets;
 
 
 import com.badlogic.gdx.graphics.g2d.Sprite;

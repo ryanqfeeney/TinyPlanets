@@ -1,4 +1,4 @@
-package com.mygdx.game.Manager.Entity.Planets;
+package com.mygdx.game.Manager.Entities.Planets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
-import com.mygdx.game.Manager.Entity.Klobjects.PathKlob;
+import com.mygdx.game.Manager.Entities.Klobjects.Klobject;
+import com.mygdx.game.Manager.Entities.Klobjects.PathKlob;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import com.mygdx.game.Manager.Utility.Colors;
 import com.mygdx.game.Manager.Utility.RenderManagers.CbodyRenderManager;

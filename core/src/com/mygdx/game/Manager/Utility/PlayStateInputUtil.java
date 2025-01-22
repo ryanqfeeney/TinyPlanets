@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.mygdx.game.Manager.Entity.Klobjects.Klobject;
-import com.mygdx.game.Manager.Entity.Planets.Cbody;
+import com.mygdx.game.Manager.Entities.Klobjects.Klobject;
+import com.mygdx.game.Manager.Entities.Planets.Cbody;
 import com.mygdx.game.Manager.GameStates.PlayState;
 import math.geom2d.Point2D;
 
