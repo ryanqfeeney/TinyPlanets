@@ -1,10 +1,5 @@
 package com.mygdx.game.Manager.Entities.Klobjects;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.Color;
-
 import math.geom2d.Point2D;
 import org.apache.commons.math3.analysis.function.Atanh;
 import org.apache.commons.math3.analysis.function.Sinh;
@@ -13,7 +8,7 @@ import com.mygdx.game.Manager.Entities.Planets.Cbody;
 import com.mygdx.game.Manager.Utility.Colors;
 import com.mygdx.game.Manager.Utility.RenderManagers.KlobjectRenderManager;
 
-import java.util.ArrayList;
+
 
 public class PathKlob extends Klobject{
     public Cbody parentPath;

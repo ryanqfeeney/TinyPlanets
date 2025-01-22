@@ -13,8 +13,6 @@ public class TinyPlanets extends ApplicationAdapter {
 	@Override
 	public void create () {
 
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
 
 		assets = new Assets();
 		assets.load( );

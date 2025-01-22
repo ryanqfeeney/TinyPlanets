@@ -19,7 +19,6 @@ import com.mygdx.game.Manager.Utility.Colors;
 import com.mygdx.game.Manager.Utility.RenderManagers.PlayStateHudRenderManager;
 
 import java.util.Calendar;
-import java.util.Date;
 
 
 public class PlayStateHud implements Disposable{
@@ -73,7 +72,7 @@ public class PlayStateHud implements Disposable{
             control_toggle_sas, control_random_orbit;
 
     private Label status_parent, status_parent_mass, status_semiA, status_semiB, status_peri, status_apoap, status_ecc,
-            status_w, status_Eanom, status_Manom, status_Tanom, status_startAnom, status_tmax;
+            status_Eanom, status_Manom, status_Tanom;// status_startAnom, status_tmax, status_w;
 
 
     float dashX, dashY, cWidth, cHeight, dashW, dashH;

@@ -195,18 +195,18 @@ public class PlayState extends GameState {
 
     }
 
-    private void drawPlanet(Cbody planet) {
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        Sprite sprite = planet.getSprite();
-        float x = (float)((planet.getX()-camX)/scale-sprite.getWidth()/2);
-        float y = (float)((planet.getY()-camY)/scale-sprite.getHeight()/2);
-        sprite.setPosition(x, y);
-        planet.getSprite().draw(batch);
-        batch.end();
+    // private void drawPlanet(Cbody planet) {
+    //     batch.setProjectionMatrix(camera.combined);
+    //     batch.begin();
+    //     Sprite sprite = planet.getSprite();
+    //     float x = (float)((planet.getX()-camX)/scale-sprite.getWidth()/2);
+    //     float y = (float)((planet.getY()-camY)/scale-sprite.getHeight()/2);
+    //     sprite.setPosition(x, y);
+    //     planet.getSprite().draw(batch);
+    //     batch.end();
 
 
-    }
+    // }
     private void drawKlob(Klobject klob) {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -260,7 +260,6 @@ public class PlayState extends GameState {
 
         do{
             double ang = (Math.random() * 360);
-            double rote = (Math.random() * 360);
             double dist = parent.getName().equals("sun") ?
                     Math.random()*30_000_000_000.0 + getPlanets().get(0).getRadius() :
                     Math.random()*(parent.getSoir()-parent.getRadius()) + parent.getRadius();
